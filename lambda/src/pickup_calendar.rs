@@ -1,0 +1,191 @@
+use crate::error::Error;
+use crate::pickup::nth_text;
+use crate::pickup::{Pickup, PickupType};
+use icalendar::{Calendar, Component, Event};
+use itertools::Itertools;
+use lazy_static::lazy_static;
+use scraper::{Html, Selector};
+
+lazy_static! {
+    static ref ADDRESS_SELECTOR: Selector = Selector::parse("p.subheading").unwrap();
+    static ref SCHEDULE_SELECTOR: Selector = Selector::parse("div.schedule>div").unwrap();
+}
+pub struct PickupCalendar<'a> {
+    pub id: &'a str,
+    pub address: &'a str,
+    pub pickups: Vec<Pickup>,
+}
+
+impl<'a> PickupCalendar<'a> {
+    fn new(id: &'a str, address: &'a str, pickups: Vec<Pickup>) -> PickupCalendar<'a> {
+        let dates = pickups
+            .into_iter()
+            .sorted()
+            .group_by(|e| e.date)
+            .into_iter()
+            .flat_map(|(date, pickups)| {
+                let mut pickups = pickups.collect_vec();
+
+                // if there aren't any trash items, add one
+                if !pickups.iter().any(|e| e.name == PickupType::Trash) {
+                    pickups.push(Pickup::new(PickupType::Trash, date));
+                }
+
+                pickups
+            })
+            .collect_vec();
+
+        PickupCalendar {
+            id,
+            address,
+            pickups: dates,
+        }
+    }
+}
+
+impl<'a> TryFrom<PickupCalendar<'a>> for Calendar {
+    type Error = Error;
+
+    fn try_from(value: PickupCalendar) -> Result<Self, Self::Error> {
+        // Create new calendar events and add them
+        let events = value.pickups.into_iter().map(|pickup| {
+            Event::new()
+                .all_day(pickup.date)
+                .summary(&pickup.name.to_string())
+                .done()
+        });
+
+        let mut calendar = Calendar::new().name("Trashcal").done();
+        calendar.extend(events);
+        Ok(calendar)
+    }
+}
+
+impl<'a> TryFrom<(&'a str, &'a Html)> for PickupCalendar<'a> {
+    type Error = Error;
+
+    fn try_from((id, document): (&'a str, &'a Html)) -> Result<Self, Self::Error> {
+        let address = nth_text(document.root_element(), &ADDRESS_SELECTOR, 0)?;
+        let schedule = document.select(&SCHEDULE_SELECTOR);
+        let pickups: Result<Vec<Pickup>, Error> = schedule
+            .map(Pickup::try_from)
+            .filter(Result::is_ok)
+            .collect();
+
+        Ok(PickupCalendar::new(id, address, pickups?))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use chrono::Duration;
+    use chrono::NaiveDate;
+    use chrono::Utc;
+
+    use super::Pickup;
+    use super::PickupCalendar;
+    use crate::pickup::PickupType;
+
+    fn create_pickup_html(name: &str, date: &str) -> String {
+        format!("<div><h3>{name}</h3><p></p><p></p><p>{date}</p></div>")
+    }
+    fn create_page_html(pairs: Vec<(&str, &str)>) -> String {
+        let divs = pairs
+            .iter()
+            .map(|(name, date)| create_pickup_html(name, date))
+            .collect::<Vec<String>>()
+            .join("");
+
+        return format!("<html><body><div><p class=\"subheading\">1234 ANYWHERE ST, San Diego, CA 92101</p></div><div class=\"schedule\">{divs}</div></body></html>");
+    }
+
+    #[test]
+    fn parse_multiple_pickups() {
+        let html = create_page_html(vec![
+            ("Trash", "01/01/2023"),
+            ("Greens", "01/01/2023"),
+            ("Recyclables", "01/01/2023"),
+        ]);
+        let document = scraper::Html::parse_document(&html);
+
+        let expected = vec![
+            Pickup::new(PickupType::Recyclables, NaiveDate::from_ymd(2023, 01, 01)),
+            Pickup::new(PickupType::Greens, NaiveDate::from_ymd(2023, 01, 01)),
+            Pickup::new(PickupType::Trash, NaiveDate::from_ymd(2023, 01, 01)),
+        ];
+
+        let actual = PickupCalendar::try_from(("foo", &document)).unwrap();
+
+        for (i, x) in expected.iter().enumerate() {
+            let actual = actual.pickups.get(i).unwrap();
+            assert_eq!(x, actual);
+        }
+    }
+
+    #[test]
+    fn insert_pickup_for_opposite_week_greens() {
+        let this_week = Utc::now().date_naive();
+        let next_week = this_week.checked_add_signed(Duration::days(7)).unwrap();
+
+        let pickups = vec![
+            Pickup::new(PickupType::Trash, this_week),
+            Pickup::new(PickupType::Recyclables, next_week),
+            Pickup::new(PickupType::Greens, this_week),
+        ];
+
+        let result = PickupCalendar::new("foo", "1234 Anywhere St.", pickups);
+        assert_eq!(
+            result.pickups,
+            vec![
+                Pickup::new(PickupType::Greens, this_week),
+                Pickup::new(PickupType::Trash, this_week),
+                Pickup::new(PickupType::Recyclables, next_week),
+                Pickup::new(PickupType::Trash, next_week),
+            ]
+        );
+    }
+
+    #[test]
+    fn insert_pickup_for_opposite_week_recycling() {
+        let this_week = Utc::now().date_naive();
+        let next_week = this_week.checked_add_signed(Duration::days(7)).unwrap();
+
+        let pickups = vec![
+            Pickup::new(PickupType::Trash, this_week),
+            Pickup::new(PickupType::Recyclables, this_week),
+            Pickup::new(PickupType::Greens, next_week),
+        ];
+
+        let result = PickupCalendar::new("foo", "1234 Anywhere St.", pickups);
+        assert_eq!(
+            result.pickups,
+            vec![
+                Pickup::new(PickupType::Recyclables, this_week),
+                Pickup::new(PickupType::Trash, this_week),
+                Pickup::new(PickupType::Greens, next_week),
+                Pickup::new(PickupType::Trash, next_week),
+            ]
+        );
+    }
+
+    #[test]
+    fn sameweek_greens_and_recycling() {
+        let this_week = Utc::now().date_naive();
+
+        let pickups = vec![
+            Pickup::new(PickupType::Trash, this_week),
+            Pickup::new(PickupType::Recyclables, this_week),
+            Pickup::new(PickupType::Greens, this_week),
+        ];
+
+        let result = PickupCalendar::new("foo", "1234 Anywhere St.", pickups);
+        assert_eq!(
+            result.pickups,
+            vec![
+                Pickup::new(PickupType::Recyclables, this_week),
+                Pickup::new(PickupType::Greens, this_week),
+                Pickup::new(PickupType::Trash, this_week),
+            ]
+        );
+    }
+}

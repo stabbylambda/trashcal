@@ -1,0 +1,22 @@
+[package]
+name = "trashcal"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4"
+env_logger = "0.9"
+icalendar = "0.13"
+itertools = "0.10"
+lambda_http = { version = "0.6.1", default-features = false, features = ["apigw_rest", "apigw_http"] }
+lambda_runtime = "0.6.1"
+lazy_static = "1.4"
+regex = "1.6"
+# disabling native openssl in favor of rustls because cross compiling openssl with cargo lambda sucks
+reqwest = { version = "0.11", default-features = false, features = ["rustls-tls"] }
+scraper = "0.13"
+strum = { version = "0.24", features = ["derive"] }
+tokio = { version = "1", features = ["macros"] }
+tracing = { version = "0.1", features = ["log"] }
+tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt"] }
+uuid = { version = "1", features = [ "v4", "fast-rng", "macro-diagnostics"]}
