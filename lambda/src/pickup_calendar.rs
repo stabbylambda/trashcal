@@ -5,19 +5,21 @@ use icalendar::{Calendar, Component, Event};
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use scraper::{Html, Selector};
+use serde::Serialize;
 
 lazy_static! {
     static ref ADDRESS_SELECTOR: Selector = Selector::parse("p.subheading").unwrap();
     static ref SCHEDULE_SELECTOR: Selector = Selector::parse("div.schedule>div").unwrap();
 }
-pub struct PickupCalendar<'a> {
-    pub id: &'a str,
-    pub address: &'a str,
+#[derive(Serialize, Debug)]
+pub struct PickupCalendar {
+    pub id: String,
+    pub address: String,
     pub pickups: Vec<Pickup>,
 }
 
-impl<'a> PickupCalendar<'a> {
-    fn new(id: &'a str, address: &'a str, pickups: Vec<Pickup>) -> PickupCalendar<'a> {
+impl PickupCalendar {
+    fn new(id: &str, address: &str, pickups: Vec<Pickup>) -> PickupCalendar {
         let dates = pickups
             .into_iter()
             .sorted()
@@ -36,14 +38,14 @@ impl<'a> PickupCalendar<'a> {
             .collect_vec();
 
         PickupCalendar {
-            id,
-            address,
+            id: id.to_string(),
+            address: address.to_string(),
             pickups: dates,
         }
     }
 }
 
-impl<'a> TryFrom<PickupCalendar<'a>> for Calendar {
+impl TryFrom<PickupCalendar> for Calendar {
     type Error = Error;
 
     fn try_from(value: PickupCalendar) -> Result<Self, Self::Error> {
@@ -61,7 +63,7 @@ impl<'a> TryFrom<PickupCalendar<'a>> for Calendar {
     }
 }
 
-impl<'a> TryFrom<(&'a str, &'a Html)> for PickupCalendar<'a> {
+impl<'a> TryFrom<(&'a str, &'a Html)> for PickupCalendar {
     type Error = Error;
 
     fn try_from((id, document): (&'a str, &'a Html)) -> Result<Self, Self::Error> {

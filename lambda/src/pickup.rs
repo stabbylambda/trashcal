@@ -2,6 +2,7 @@ use crate::error::Error;
 use chrono::NaiveDate;
 use lazy_static::lazy_static;
 use scraper::{ElementRef, Html, Selector};
+use serde::Serialize;
 use strum::{Display, EnumString};
 
 lazy_static! {
@@ -21,6 +22,19 @@ pub enum PickupType {
     Trash,
 }
 
+impl Serialize for PickupType {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match *self {
+            PickupType::Recyclables => serializer.serialize_unit_variant("", 0, "♻️ Recyclables"),
+            PickupType::Greens => serializer.serialize_unit_variant("", 1, "🌳 Greens"),
+            PickupType::Trash => serializer.serialize_unit_variant("", 2, "🗑️ Trash"),
+        }
+    }
+}
+
 pub(crate) fn nth_text<'a>(
     x: ElementRef<'a>,
     selector: &'a Selector,
@@ -33,7 +47,7 @@ pub(crate) fn nth_text<'a>(
         .ok_or(Error::ParseError)
 }
 
-#[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Clone, Copy, Serialize)]
 pub struct Pickup {
     pub date: NaiveDate,
     pub name: PickupType,
