@@ -30,7 +30,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             .body(json.into())
     } else {
         info!("Returning calendar as iCal feed");
-        let calendar: Calendar = Calendar::try_from(calendar)?;
+        let calendar = Calendar::try_from(calendar)?;
 
         resp.header(CONTENT_TYPE, "text/calendar;charset=UTF-8")
             .header(CONTENT_DISPOSITION, "attachment; filename=trashcal.ics")
