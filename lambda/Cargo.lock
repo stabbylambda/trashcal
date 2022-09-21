@@ -727,6 +727,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
+name = "mediatype"
+version = "0.19.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "90da6e15720cff55898a02a2ed6e9a21b152f0283a5ad89465f8d8f80c9750ca"
+
+[[package]]
 name = "memchr"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1648,6 +1654,7 @@ dependencies = [
  "lambda_http",
  "lambda_runtime",
  "lazy_static",
+ "mediatype",
  "regex",
  "reqwest",
  "scraper",
