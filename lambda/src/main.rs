@@ -12,13 +12,16 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // get the ID
     let params = event.path_parameters();
     let query = event.query_string_parameters();
-    let id = params.first("id").or(query.first("id")).unwrap_or("null");
+    let id = params
+        .first("id")
+        .or_else(|| query.first("id"))
+        .unwrap_or("null");
 
     // start tracing
     let _x = span!(Level::INFO, "trashcal", id).entered();
 
-    let calendar = trashcal(&id).await?;
-    let accept = get_mime_type(&event.headers());
+    let calendar = trashcal(id).await?;
+    let accept = get_mime_type(event.headers());
 
     // build the response as either json or calendar
     let resp = Response::builder().status(StatusCode::OK);
@@ -58,7 +61,7 @@ fn get_mime_type(headers: &HeaderMap<HeaderValue>) -> &str {
     let inner = || -> Result<&str, Box<dyn std::error::Error>> {
         let value = headers
             .get(http::header::ACCEPT)
-            .ok_or_else(|| "no header present")?;
+            .ok_or("no header present")?;
 
         let s = value.to_str()?;
         Ok(s)

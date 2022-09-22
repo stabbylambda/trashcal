@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { RustFunction, Settings } from "rust.aws-cdk-lambda";
+import { RustFunction } from "rust.aws-cdk-lambda";
 import * as apigwv2 from "@aws-cdk/aws-apigatewayv2-alpha";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
@@ -12,6 +12,7 @@ import * as subscriptions from "aws-cdk-lib/aws-sns-subscriptions";
 import { Alarm, Metric, TreatMissingData } from "aws-cdk-lib/aws-cloudwatch";
 import { SnsAction } from "aws-cdk-lib/aws-cloudwatch-actions";
 
+// Load up info from .env file
 const domainName = getEnv("DOMAIN_NAME");
 const email = getEnv("EMAIL");
 
