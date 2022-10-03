@@ -6,21 +6,22 @@ edition = "2021"
 [dependencies]
 chrono = "0.4"
 env_logger = "0.9"
-http = "0.2.8"
-icalendar = { version = "0.13.1", features = ["parser", "serde"] }
+http = "0.2"
+icalendar = { version = "0.13", features = ["parser", "serde"] }
 itertools = "0.10"
-lambda_http = { version = "0.6.1", default-features = false, features = ["apigw_rest", "apigw_http"] }
-lambda_runtime = "0.6.1"
+lambda_http = { version = "0.6", default-features = false, features = ["apigw_rest", "apigw_http"] }
+lambda_runtime = "0.6"
 lazy_static = "1.4"
-mediatype = "0.19.9"
+mediatype = "0.19"
 regex = "1.6"
 # disabling native openssl in favor of rustls because cross compiling openssl with cargo lambda sucks
 reqwest = { version = "0.11", default-features = false, features = ["rustls-tls"] }
 scraper = "0.13"
-serde = { version = "1.0.144", features = ["derive"] }
-serde_json = "1.0.85"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 strum = { version = "0.24", features = ["derive"] }
 tokio = { version = "1", features = ["macros"] }
+thiserror = "1.0"
 tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt"] }
 uuid = { version = "1", features = [ "v4", "fast-rng", "macro-diagnostics"]}

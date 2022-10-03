@@ -1,7 +1,7 @@
 use crate::error::Error;
 use crate::pickup_calendar::PickupCalendar;
 use scraper::Html;
-use tracing::info;
+use tracing::{error, info};
 
 pub mod error;
 pub mod pickup;
@@ -11,7 +11,9 @@ pub mod pickup_calendar;
 pub async fn trashcal(id: &str) -> Result<PickupCalendar, Error> {
     // as far as I can tell, all IDs start with a4Ot
     if !id.starts_with("a4Ot") {
-        return Err(Error::IdError(id.to_string()));
+        let err = Error::IdError(id.to_string());
+        error!("{}", err);
+        return Err(err);
     }
 
     info!("Getting trashcal");
@@ -20,7 +22,9 @@ pub async fn trashcal(id: &str) -> Result<PickupCalendar, Error> {
 
     // If we got the landing page, don't even try to parse it
     if html.contains("handleRedirect") {
-        return Err(Error::RedirectPage(id.to_string()));
+        let err = Error::RedirectPage(id.to_string());
+        error!("{}", err);
+        return Err(err);
     }
 
     info!("Parsing calendar");

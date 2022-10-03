@@ -118,6 +118,6 @@ mod tests {
         let html = create_pickup_html("Not a real thing", "01/01/2023");
         let result = Pickup::try_from(html.as_str());
 
-        assert_eq!(result, Err(Error::ParseError));
+        assert!(result.is_err());
     }
 }
