@@ -87,7 +87,6 @@ mod tests {
 
     use super::Pickup;
     use super::PickupType;
-    use crate::Error;
     use lazy_static::lazy_static;
     use scraper::Selector;
 

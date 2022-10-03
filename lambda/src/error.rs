@@ -1,7 +1,5 @@
 use thiserror::Error;
 
-use tracing::error;
-
 #[derive(Error, Debug)]
 
 pub enum Error {

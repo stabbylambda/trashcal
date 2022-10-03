@@ -1,5 +1,6 @@
 use std::convert::TryFrom;
 
+use anyhow::Result;
 use http::header::{CONTENT_DISPOSITION, CONTENT_TYPE};
 use http::{HeaderMap, HeaderValue, StatusCode};
 use icalendar::Calendar;
@@ -8,7 +9,7 @@ use tracing::info;
 use tracing::{span, Level};
 use trashcal::trashcal;
 
-async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
+async fn function_handler(event: Request) -> Result<Response<Body>> {
     // get the ID
     let params = event.path_parameters();
     let query = event.query_string_parameters();
