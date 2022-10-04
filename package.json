@@ -5,9 +5,9 @@
     "trashcal-cdk": "bin/trashcal-cdk.js"
   },
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "test": "jest",
+    "build": "cd lambda && cargo lambda build --release",
+    "watch": "cd lambda && cargo lambda watch",
+    "test": "cd lambda && cargo test",
     "cdk": "cdk"
   },
   "devDependencies": {
@@ -31,5 +31,8 @@
   },
   "optionalDependencies": {
     "rust.aws-cdk-lambda": "^1.1.3"
+  },
+  "volta": {
+    "node": "16.17.1"
   }
 }
