@@ -1,5 +1,4 @@
-use anyhow::ensure;
-use anyhow::Result;
+use anyhow::{ensure, Result};
 use scraper::Html;
 use tracing::info;
 
