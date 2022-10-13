@@ -6,28 +6,16 @@ use http::header::{CONTENT_DISPOSITION, CONTENT_TYPE};
 use http::StatusCode;
 use icalendar::Calendar;
 use lambda_http::{Body, Request, RequestExt, Response};
-use tracing::info;
-use tracing::{span, Level};
+use tracing::{info, instrument};
 
 pub mod error;
 pub mod pickup;
 pub mod pickup_calendar;
 pub mod trashcal;
 
-pub async fn trashcal_handler(event: Request) -> Result<Response<Body>> {
-    // get the ID
-    let params = event.path_parameters();
-    let query = event.query_string_parameters();
-    let id = params
-        .first("id")
-        .or_else(|| query.first("id"))
-        .unwrap_or("null");
-
-    // start tracing
-    let _x = span!(Level::INFO, "trashcal", id).entered();
-
+#[instrument]
+pub async fn get_trashcal(id: &str, accept: &str) -> Result<Response<Body>> {
     let calendar = trashcal(id).await?;
-    let accept = get_mime_type(event.headers());
 
     // build the response as either json or calendar
     let resp = Response::builder().status(StatusCode::OK);
@@ -45,8 +33,20 @@ pub async fn trashcal_handler(event: Request) -> Result<Response<Body>> {
             .header(CONTENT_DISPOSITION, "attachment; filename=trashcal.ics")
             .body(calendar.to_string().into())
     };
-
     Ok(resp?)
+}
+
+pub async fn trashcal_handler(event: Request) -> Result<Response<Body>> {
+    // get the ID
+    let params = event.path_parameters();
+    let query = event.query_string_parameters();
+    let id = params
+        .first("id")
+        .or_else(|| query.first("id"))
+        .unwrap_or("null");
+    let accept = get_mime_type(event.headers());
+
+    get_trashcal(id, accept).await
 }
 
 /// Safely get the accept header. Fastmail apparently doesn't send an accept header at all (!)
