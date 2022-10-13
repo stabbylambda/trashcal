@@ -65,27 +65,33 @@ export class TrashcalCdkStack extends cdk.Stack {
       integration: trashcalIntegration,
     });
 
-    // create a metric for rust panics (hi Paul! 👋)
-    const METRIC_NAME = "panics";
-    const METRIC_NAMESPACE = "trashcal";
+    const metricNamespace = "trashcal";
 
-    const metric = new Metric({
-      namespace: METRIC_NAMESPACE,
-      metricName: METRIC_NAME,
-    });
-
-    // if rust panicks, emit a 1
-    new logs.MetricFilter(this, "trashcal-panic-metric-filter", {
-      logGroup: logGroup,
-      metricNamespace: METRIC_NAMESPACE,
-      metricName: METRIC_NAME,
-      filterPattern: logs.FilterPattern.allTerms("panicked"),
+    // create a metric for counting total calendars
+    new logs.MetricFilter(this, "trashcal-total", {
+      logGroup,
+      metricNamespace,
+      metricName: "total",
+      filterPattern: logs.FilterPattern.allTerms("Returning calendar"),
       metricValue: "1",
     });
 
+    // create a metric for rust panics (hi Paul! 👋)
+    const panicFilter = new logs.MetricFilter(
+      this,
+      "trashcal-panic-metric-filter",
+      {
+        logGroup,
+        metricNamespace,
+        metricName: "panics",
+        filterPattern: logs.FilterPattern.allTerms("panicked"),
+        metricValue: "1",
+      }
+    );
+
     // if rust panicks at all, set the alarm
     const panicAlarm = new Alarm(this, "trashcal-panic-alarm", {
-      metric,
+      metric: panicFilter.metric(),
       evaluationPeriods: 1,
       threshold: 1,
       treatMissingData: TreatMissingData.NOT_BREACHING,

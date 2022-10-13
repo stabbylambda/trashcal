@@ -20,13 +20,13 @@ pub async fn get_trashcal(id: &str, accept: &str) -> Result<Response<Body>> {
     // build the response as either json or calendar
     let resp = Response::builder().status(StatusCode::OK);
     let resp = if accept.starts_with("application/json") {
-        info!("Returning calendar as json");
+        info!(message = "Returning calendar as JSON");
         let json = serde_json::to_string_pretty(&calendar)?;
 
         resp.header(CONTENT_TYPE, "application/json")
             .body(json.into())
     } else {
-        info!("Returning calendar as iCal feed");
+        info!(message = "Returning calendar as iCal");
         let calendar = Calendar::try_from(calendar)?;
 
         resp.header(CONTENT_TYPE, "text/calendar;charset=UTF-8")
