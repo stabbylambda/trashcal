@@ -9,6 +9,7 @@
     "watch": "cd lambda && cargo lambda watch",
     "test": "cd lambda && cargo test",
     "cdk": "cdk",
+    "deploy": "cdk deploy && npm run smoke",
     "smoke": "vitest run smoke.test.ts"
   },
   "devDependencies": {
