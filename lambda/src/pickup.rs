@@ -107,7 +107,7 @@ mod tests {
             result,
             Pickup {
                 name: PickupType::Trash,
-                date: NaiveDate::from_ymd(2023, 01, 01),
+                date: NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
             }
         )
     }

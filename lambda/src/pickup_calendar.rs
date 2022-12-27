@@ -49,10 +49,12 @@ impl TryFrom<PickupCalendar> for Calendar {
     type Error = Error;
 
     fn try_from(value: PickupCalendar) -> Result<Self, Self::Error> {
+        let url = format!("https://stabbylambda.com/trashcal/{}", value.id);
         // Create new calendar events and add them
         let events = value.pickups.into_iter().map(|pickup| {
             Event::new()
                 .all_day(pickup.date)
+                .url(&url)
                 .summary(&pickup.name.to_string())
                 .done()
         });
@@ -98,7 +100,7 @@ mod test {
             .collect::<Vec<String>>()
             .join("");
 
-        return format!("<html><body><div><p class=\"subheading\">1234 ANYWHERE ST, San Diego, CA 92101</p></div><div class=\"schedule\">{divs}</div></body></html>");
+        format!("<html><body><div><p class=\"subheading\">1234 ANYWHERE ST, San Diego, CA 92101</p></div><div class=\"schedule\">{divs}</div></body></html>")
     }
 
     #[test]
@@ -111,9 +113,18 @@ mod test {
         let document = scraper::Html::parse_document(&html);
 
         let expected = vec![
-            Pickup::new(PickupType::Recyclables, NaiveDate::from_ymd(2023, 01, 01)),
-            Pickup::new(PickupType::Greens, NaiveDate::from_ymd(2023, 01, 01)),
-            Pickup::new(PickupType::Trash, NaiveDate::from_ymd(2023, 01, 01)),
+            Pickup::new(
+                PickupType::Recyclables,
+                NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+            ),
+            Pickup::new(
+                PickupType::Greens,
+                NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+            ),
+            Pickup::new(
+                PickupType::Trash,
+                NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+            ),
         ];
 
         let actual = PickupCalendar::try_from(("foo", &document)).unwrap();
