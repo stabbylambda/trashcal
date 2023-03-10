@@ -5,13 +5,13 @@ use icalendar::{Calendar, Component, Event};
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use scraper::{Html, Selector};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 lazy_static! {
     static ref ADDRESS_SELECTOR: Selector = Selector::parse("p.subheading").unwrap();
-    static ref SCHEDULE_SELECTOR: Selector = Selector::parse("div.schedule>div").unwrap();
+    static ref SCHEDULE_SELECTOR: Selector = Selector::parse("div.schedule div").unwrap();
 }
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct PickupCalendar {
     pub id: String,
     pub address: String,

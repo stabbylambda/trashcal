@@ -1,37 +1,52 @@
+use std::{fmt::Display, str::FromStr};
+
 use crate::error::Error;
 use chrono::NaiveDate;
 use lazy_static::lazy_static;
 use scraper::{ElementRef, Html, Selector};
-use serde::Serialize;
-use strum::{Display, EnumString};
+use serde::{Deserialize, Serialize};
 
 lazy_static! {
     static ref NAME_SELECTOR: Selector = Selector::parse("h3").unwrap();
     static ref DATE_SELECTOR: Selector = Selector::parse("p").unwrap();
 }
 
-#[derive(Debug, Eq, PartialEq, PartialOrd, Ord, EnumString, Display, Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize, Hash)]
 pub enum PickupType {
-    #[strum(serialize = "Recyclables", to_string = "♻️ Recyclables")]
+    #[serde(rename(serialize = "♻️ Recyclables", deserialize = "♻️ Recyclables"))]
     Recyclables,
 
-    #[strum(serialize = "Greens", to_string = "🌳 Greens")]
+    #[serde(rename(serialize = "🌳 Greens", deserialize = "🌳 Greens"))]
     Greens,
 
-    #[strum(serialize = "Trash", to_string = "🗑️ Trash")]
+    #[serde(rename(serialize = "🗑️ Trash", deserialize = "🗑️ Trash"))]
     Trash,
 }
 
-impl Serialize for PickupType {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        match *self {
-            PickupType::Recyclables => serializer.serialize_unit_variant("", 0, "♻️ Recyclables"),
-            PickupType::Greens => serializer.serialize_unit_variant("", 1, "🌳 Greens"),
-            PickupType::Trash => serializer.serialize_unit_variant("", 2, "🗑️ Trash"),
+impl FromStr for PickupType {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Recyclables" => Ok(Self::Recyclables),
+            "Greens" => Ok(Self::Greens),
+            "Trash" => Ok(Self::Trash),
+            _ => Err(Error::ParseError),
         }
+    }
+}
+
+impl Display for PickupType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                PickupType::Recyclables => "♻️ Recyclables",
+                PickupType::Greens => "🌳 Greens",
+                PickupType::Trash => "🗑️ Trash",
+            }
+        )
     }
 }
 
@@ -47,7 +62,7 @@ pub(crate) fn nth_text<'a>(
         .ok_or(Error::ParseError)
 }
 
-#[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Clone, Copy, Serialize)]
+#[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Clone, Copy, Serialize, Deserialize)]
 pub struct Pickup {
     pub date: NaiveDate,
     pub name: PickupType,
