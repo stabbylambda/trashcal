@@ -1,15 +1,12 @@
-use std::{fmt::Display, str::FromStr};
+use std::{fmt::Display, str::FromStr, sync::OnceLock};
 
 use crate::error::Error;
 use chrono::NaiveDate;
-use lazy_static::lazy_static;
 use scraper::{ElementRef, Html, Selector};
 use serde::{Deserialize, Serialize};
 
-lazy_static! {
-    static ref NAME_SELECTOR: Selector = Selector::parse("h3").unwrap();
-    static ref DATE_SELECTOR: Selector = Selector::parse("p").unwrap();
-}
+static NAME_SELECTOR: OnceLock<Selector> = OnceLock::new();
+static DATE_SELECTOR: OnceLock<Selector> = OnceLock::new();
 
 #[derive(Debug, Eq, PartialEq, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize, Hash)]
 pub enum PickupType {
@@ -87,8 +84,11 @@ impl TryFrom<ElementRef<'_>> for Pickup {
     type Error = Error;
 
     fn try_from(value: ElementRef) -> Result<Self, Self::Error> {
-        let name = nth_text(value, &NAME_SELECTOR, 0)?;
-        let date = nth_text(value, &DATE_SELECTOR, 2)?;
+        let name_selector = NAME_SELECTOR.get_or_init(|| Selector::parse("h3").unwrap());
+        let date_selector = DATE_SELECTOR.get_or_init(|| Selector::parse("p").unwrap());
+
+        let name = nth_text(value, name_selector, 0)?;
+        let date = nth_text(value, date_selector, 2)?;
         let name: PickupType = name.parse()?;
         let date = NaiveDate::parse_from_str(date, "%m/%d/%Y")?;
 
@@ -102,15 +102,9 @@ mod tests {
 
     use super::Pickup;
     use super::PickupType;
-    use lazy_static::lazy_static;
-    use scraper::Selector;
 
     fn create_pickup_html(name: &str, date: &str) -> String {
         format!("<div><h3>{name}</h3><p></p><p></p><p>{date}</p></div>")
-    }
-
-    lazy_static! {
-        static ref SELECTOR: Selector = Selector::parse("div").unwrap();
     }
 
     #[test]
