@@ -17,7 +17,7 @@ async fn orange_recycleonly() {
     // recycleonly isn't eligible for greens pickups
     assert_eq!(map[&PickupType::Trash].len(), 2);
     assert_eq!(map[&PickupType::Recyclables].len(), 1);
-    assert!(!map.contains_key(&PickupType::Greens));
+    assert!(!map.contains_key(&PickupType::Organics));
 }
 
 #[tokio::test]
@@ -29,7 +29,7 @@ async fn blue_oppweeks() {
     // oppweeks is eligible for both recycle and greens, so trash is both weeks
     assert_eq!(map[&PickupType::Trash].len(), 2);
     assert_eq!(map[&PickupType::Recyclables].len(), 1);
-    assert_eq!(map[&PickupType::Greens].len(), 1);
+    assert_eq!(map[&PickupType::Organics].len(), 1);
 }
 
 #[tokio::test]
@@ -41,7 +41,7 @@ async fn blue_sameweeks() {
     // sameweeks is eligible for both recycle and greens, so trash is both weeks
     assert_eq!(map[&PickupType::Trash].len(), 1);
     assert_eq!(map[&PickupType::Recyclables].len(), 1);
-    assert_eq!(map[&PickupType::Greens].len(), 1);
+    assert_eq!(map[&PickupType::Organics].len(), 1);
 }
 
 #[tokio::test]
@@ -53,7 +53,7 @@ async fn orange_oppweeks() {
     // oppweeks is eligible for both recycle and greens, so trash is both weeks
     assert_eq!(map[&PickupType::Trash].len(), 2);
     assert_eq!(map[&PickupType::Recyclables].len(), 1);
-    assert_eq!(map[&PickupType::Greens].len(), 1);
+    assert_eq!(map[&PickupType::Organics].len(), 1);
 }
 
 #[tokio::test]
@@ -65,5 +65,5 @@ async fn orange_sameweeks() {
     // sameweeks is eligible for both recycle and greens, so trash is both weeks
     assert_eq!(map[&PickupType::Trash].len(), 2);
     assert_eq!(map[&PickupType::Recyclables].len(), 1);
-    assert_eq!(map[&PickupType::Greens].len(), 1);
+    assert_eq!(map[&PickupType::Organics].len(), 1);
 }

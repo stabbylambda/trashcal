@@ -111,7 +111,7 @@ mod test {
     fn parse_multiple_pickups() {
         let html = create_page_html(vec![
             ("Trash", "01/01/2023"),
-            ("Greens", "01/01/2023"),
+            ("Organics", "01/01/2023"),
             ("Recyclables", "01/01/2023"),
         ]);
         let document = scraper::Html::parse_document(&html);
@@ -122,7 +122,7 @@ mod test {
                 NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
             ),
             Pickup::new(
-                PickupType::Greens,
+                PickupType::Organics,
                 NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
             ),
             Pickup::new(
@@ -147,14 +147,14 @@ mod test {
         let pickups = vec![
             Pickup::new(PickupType::Trash, this_week),
             Pickup::new(PickupType::Recyclables, next_week),
-            Pickup::new(PickupType::Greens, this_week),
+            Pickup::new(PickupType::Organics, this_week),
         ];
 
         let result = PickupCalendar::new("foo", "1234 Anywhere St.", pickups);
         assert_eq!(
             result.pickups,
             vec![
-                Pickup::new(PickupType::Greens, this_week),
+                Pickup::new(PickupType::Organics, this_week),
                 Pickup::new(PickupType::Trash, this_week),
                 Pickup::new(PickupType::Recyclables, next_week),
                 Pickup::new(PickupType::Trash, next_week),
@@ -170,7 +170,7 @@ mod test {
         let pickups = vec![
             Pickup::new(PickupType::Trash, this_week),
             Pickup::new(PickupType::Recyclables, this_week),
-            Pickup::new(PickupType::Greens, next_week),
+            Pickup::new(PickupType::Organics, next_week),
         ];
 
         let result = PickupCalendar::new("foo", "1234 Anywhere St.", pickups);
@@ -179,7 +179,7 @@ mod test {
             vec![
                 Pickup::new(PickupType::Recyclables, this_week),
                 Pickup::new(PickupType::Trash, this_week),
-                Pickup::new(PickupType::Greens, next_week),
+                Pickup::new(PickupType::Organics, next_week),
                 Pickup::new(PickupType::Trash, next_week),
             ]
         );
@@ -192,7 +192,7 @@ mod test {
         let pickups = vec![
             Pickup::new(PickupType::Trash, this_week),
             Pickup::new(PickupType::Recyclables, this_week),
-            Pickup::new(PickupType::Greens, this_week),
+            Pickup::new(PickupType::Organics, this_week),
         ];
 
         let result = PickupCalendar::new("foo", "1234 Anywhere St.", pickups);
@@ -200,7 +200,7 @@ mod test {
             result.pickups,
             vec![
                 Pickup::new(PickupType::Recyclables, this_week),
-                Pickup::new(PickupType::Greens, this_week),
+                Pickup::new(PickupType::Organics, this_week),
                 Pickup::new(PickupType::Trash, this_week),
             ]
         );

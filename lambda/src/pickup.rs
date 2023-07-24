@@ -13,8 +13,8 @@ pub enum PickupType {
     #[serde(rename(serialize = "♻️ Recyclables", deserialize = "♻️ Recyclables"))]
     Recyclables,
 
-    #[serde(rename(serialize = "🌳 Greens", deserialize = "🌳 Greens"))]
-    Greens,
+    #[serde(rename(serialize = "🌳 Organics", deserialize = "🌳 Organics"))]
+    Organics,
 
     #[serde(rename(serialize = "🗑️ Trash", deserialize = "🗑️ Trash"))]
     Trash,
@@ -26,7 +26,7 @@ impl FromStr for PickupType {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "Recyclables" => Ok(Self::Recyclables),
-            "Greens" => Ok(Self::Greens),
+            "Organics" => Ok(Self::Organics),
             "Trash" => Ok(Self::Trash),
             _ => Err(Error::ParseError),
         }
@@ -40,7 +40,7 @@ impl Display for PickupType {
             "{}",
             match self {
                 PickupType::Recyclables => "♻️ Recyclables",
-                PickupType::Greens => "🌳 Greens",
+                PickupType::Organics => "🌳 Organics",
                 PickupType::Trash => "🗑️ Trash",
             }
         )
