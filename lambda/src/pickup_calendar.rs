@@ -49,12 +49,20 @@ impl TryFrom<PickupCalendar> for Calendar {
 
     fn try_from(value: PickupCalendar) -> Result<Self, Self::Error> {
         let url = format!("https://stabbylambda.com/trashcal/{}", value.id);
+        let description = format!(
+            "Trashcal: {url}
+
+SD Trash Page: https://getitdone.sandiego.gov/CollectionDetail?id={}",
+            value.id
+        );
+
         // Create new calendar events and add them
         let events = value.pickups.into_iter().map(|pickup| {
             Event::new()
                 .all_day(pickup.date)
                 .url(&url)
                 .summary(&pickup.name.to_string())
+                .description(&description)
                 .done()
         });
 
