@@ -1,7 +1,7 @@
 use crate::error::Error;
 use crate::pickup::nth_text;
 use crate::pickup::{Pickup, PickupType};
-use icalendar::{Calendar, Component, Event};
+use icalendar::{Calendar, Component, Event, EventLike};
 use itertools::Itertools;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
@@ -124,7 +124,7 @@ mod test {
         ]);
         let document = scraper::Html::parse_document(&html);
 
-        let expected = vec![
+        let expected = [
             Pickup::new(
                 PickupType::Recyclables,
                 NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
