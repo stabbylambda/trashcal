@@ -27,11 +27,15 @@ impl PickupCalendar {
             .flat_map(|(date, pickups)| {
                 let mut pickups = pickups.collect_vec();
 
-                // if there aren't any trash items, add one
-                if !pickups.iter().any(|e| e.name == PickupType::Trash) {
-                    pickups.push(Pickup::new(PickupType::Trash, date));
+                // For any date without an existing trash and organics item, we need to add them, since they're every week
+                if pickups.len() == 1 {
+                    pickups.append(&mut vec![
+                        Pickup::new(PickupType::Trash, date),
+                        Pickup::new(PickupType::Organics, date),
+                    ]);
                 }
 
+                pickups.sort_by(|x, y| x.name.cmp(&y.name));
                 pickups
             })
             .collect_vec();
@@ -148,7 +152,7 @@ mod test {
     }
 
     #[test]
-    fn insert_pickup_for_opposite_week_greens() {
+    fn insert_pickup_for_opposite_week_recycling() {
         let this_week = Utc::now().date_naive();
         let next_week = this_week.checked_add_signed(Duration::days(7)).unwrap();
 
@@ -162,31 +166,11 @@ mod test {
         assert_eq!(
             result.pickups,
             vec![
+                //this week
                 Pickup::new(PickupType::Organics, this_week),
                 Pickup::new(PickupType::Trash, this_week),
+                // next week
                 Pickup::new(PickupType::Recyclables, next_week),
-                Pickup::new(PickupType::Trash, next_week),
-            ]
-        );
-    }
-
-    #[test]
-    fn insert_pickup_for_opposite_week_recycling() {
-        let this_week = Utc::now().date_naive();
-        let next_week = this_week.checked_add_signed(Duration::days(7)).unwrap();
-
-        let pickups = vec![
-            Pickup::new(PickupType::Trash, this_week),
-            Pickup::new(PickupType::Recyclables, this_week),
-            Pickup::new(PickupType::Organics, next_week),
-        ];
-
-        let result = PickupCalendar::new("foo", "1234 Anywhere St.", pickups);
-        assert_eq!(
-            result.pickups,
-            vec![
-                Pickup::new(PickupType::Recyclables, this_week),
-                Pickup::new(PickupType::Trash, this_week),
                 Pickup::new(PickupType::Organics, next_week),
                 Pickup::new(PickupType::Trash, next_week),
             ]
