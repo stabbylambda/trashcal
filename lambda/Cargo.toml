@@ -6,15 +6,15 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
-env_logger = "0.10"
-http = "0.2"
-icalendar = { version = "0.15", features = ["parser", "serde"] }
-itertools = "0.11"
-lambda_http = { version = "0.8", default-features = false, features = [
+env_logger = "0.11"
+http = "1.0.0"
+icalendar = { version = "0.16", features = ["parser", "serde"] }
+itertools = "0.12"
+lambda_http = { version = "0.9", default-features = false, features = [
     "apigw_rest",
     "apigw_http",
 ] }
-lambda_runtime = "0.8"
+lambda_runtime = "0.9"
 mediatype = "0.19"
 regex = "1.6"
 # disabling native openssl in favor of rustls because cross compiling openssl with cargo lambda sucks
