@@ -39,5 +39,8 @@ jobs:
         run: |
           npm install
       - name: run cdk deploy
+        env:
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+          EMAIL: ${{ secrets.EMAIL }}
         run: |
           npm run deploy
