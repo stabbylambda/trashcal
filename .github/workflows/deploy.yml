@@ -35,6 +35,9 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+      - name: get cargo lambda
+        run: |
+          cargo binstall cargo-lambda
       - name: npm install
         run: |
           npm install
