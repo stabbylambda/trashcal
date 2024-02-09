@@ -16,9 +16,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      
     - name: Build
       working-directory: ./lambda
       run: cargo build --verbose
+      
     - name: Run tests
       working-directory: ./lambda
       run: cargo test --verbose
