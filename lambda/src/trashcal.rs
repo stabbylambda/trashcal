@@ -9,6 +9,9 @@ pub async fn trashcal(id: &str) -> Result<PickupCalendar> {
     // as far as I can tell, all IDs start with a4Ot
     ensure!(id.starts_with("a4Ot"), Error::IdError(id.to_string()));
 
+    // rip out .ics for Paul
+    let id = id.replace(".ics", "");
+
     info!("Getting trashcal");
     let url = format!("https://getitdone.force.com/CollectionDetail?id={id}");
     let html = reqwest::get(url).await?.text().await?;
@@ -21,7 +24,7 @@ pub async fn trashcal(id: &str) -> Result<PickupCalendar> {
 
     info!("Parsing calendar");
     let document = Html::parse_document(&html);
-    let calendar = PickupCalendar::try_from((id, &document))?;
+    let calendar = PickupCalendar::try_from((id.as_str(), &document))?;
 
     Ok(calendar)
 }
