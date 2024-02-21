@@ -15,11 +15,13 @@ pub mod trashcal;
 
 #[instrument]
 pub async fn get_trashcal(id: &str, accept: &str) -> Result<Response<Body>> {
+    let is_ics_request = id.contains(".ics");
+
     let calendar = trashcal(id).await?;
 
     // build the response as either json or calendar
     let resp = Response::builder().status(StatusCode::OK);
-    let resp = if accept.starts_with("application/json") {
+    let resp = if accept.starts_with("application/json") && !is_ics_request {
         info!(message = "Returning calendar as JSON");
         let json = serde_json::to_string_pretty(&calendar)?;
 

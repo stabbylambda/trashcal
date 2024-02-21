@@ -4,7 +4,9 @@
   "rawPath": "/a4Ot0000001E8i4EAC.ics",
   "rawQueryString": "",
   "cookies": [],
-  "headers": {},
+  "headers": {
+    "accept": "application/json, text/plain, */*"
+  },
   "queryStringParameters": {},
   "requestContext": {
     "accountId": "123456789012",
