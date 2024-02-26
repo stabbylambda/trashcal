@@ -14,7 +14,7 @@ lambda_http = { version = "0.9", default-features = false, features = [
     "apigw_rest",
     "apigw_http",
 ] }
-lambda_runtime = "0.9"
+lambda_runtime = "0.10"
 mediatype = "0.19"
 regex = "1.10"
 # disabling native openssl in favor of rustls because cross compiling openssl with cargo lambda sucks
