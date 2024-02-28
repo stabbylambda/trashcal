@@ -1,6 +1,6 @@
 use anyhow::{ensure, Result};
+use lambda_runtime::tracing::info;
 use scraper::Html;
-use tracing::info;
 
 use crate::{error::Error, pickup_calendar::PickupCalendar};
 
