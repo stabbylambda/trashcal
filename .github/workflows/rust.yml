@@ -21,7 +21,9 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Build
+        working-directory: ./trashcal-lambda
         run: cargo build --verbose
 
       - name: Run tests
+        working-directory: ./trashcal-lambda
         run: cargo test --verbose
