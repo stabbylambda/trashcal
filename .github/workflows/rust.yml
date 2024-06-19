@@ -18,16 +18,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v26
-      - uses: cachix/cachix-action@v14
-        with:
-          name: devenv
-      - name: Install devenv.sh
-        run: nix profile install nixpkgs#devenv
-
+      
+      - name: Nix Develop Action
+        uses: nicknovitski/nix-develop@v1.1.0
+      
       - name: Build
         working-directory: ./trashcal-lambda
-        run: devenv shell cargo lambda build -- --arm64
+        run: cargo lambda build --arm64
 
       - name: Run tests
         working-directory: ./trashcal-lambda
-        run: devenv shell cargo test
+        run: cargo test
