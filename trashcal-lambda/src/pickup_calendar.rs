@@ -22,7 +22,7 @@ impl PickupCalendar {
         let dates = pickups
             .into_iter()
             .sorted()
-            .group_by(|e| e.date)
+            .chunk_by(|e| e.date)
             .into_iter()
             .flat_map(|(date, pickups)| {
                 let mut pickups = pickups.collect_vec();
