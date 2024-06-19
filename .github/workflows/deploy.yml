@@ -14,16 +14,27 @@ jobs:
   run-cdk-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Setup Magic Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Use nix-develop shell
+        uses: nicknovitski/nix-develop@v1.1.0
+        with:
+          arguments: . --impure
+          
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.ASSUME_ROLE }}
           aws-region: us-west-2
           role-duration-seconds: 900
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
+
       - name: Get npm cache directory
         id: npm-cache-dir
         run: |
@@ -35,22 +46,13 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-      - name: Install Zig toolchain
-        uses: korandoru/setup-zig@v1.7.0
-        with:
-          zig-version: 0.10.0
-      - name: Install Cargo Lambda
-        uses: jaxxstorm/action-install-gh-release@v1.12.0
-        with:
-          repo: cargo-lambda/cargo-lambda
-          platform: linux
-          arch: x86_64
+            
+ 
       - name: npm install
         working-directory: ./cdk
         run: |
           npm install
+          
       - name: run cdk deploy
         working-directory: ./cdk
         env:
