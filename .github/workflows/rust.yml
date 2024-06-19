@@ -17,13 +17,29 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+      - uses: cachix/install-nix-action@v26
+      - uses: cachix/cachix-action@v14
+        with:
+          name: devenv
+      - name: Install devenv.sh
+        run: nix profile install nixpkgs#devenv
 
       - name: Build
+<<<<<<< Updated upstream
         working-directory: ./trashcal-lambda
         run: cargo build --verbose
+||||||| Stash base
+        run: cargo build --verbose
+=======
+        run: devenv shell cargo lambda build --arm64
+>>>>>>> Stashed changes
 
       - name: Run tests
+<<<<<<< Updated upstream
         working-directory: ./trashcal-lambda
         run: cargo test --verbose
+||||||| Stash base
+        run: cargo test --verbose
+=======
+        run: devenv shell cargo test
+>>>>>>> Stashed changes
