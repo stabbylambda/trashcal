@@ -48,9 +48,11 @@ jobs:
           platform: linux
           arch: x86_64
       - name: npm install
+        working-directory: ./cdk
         run: |
           npm install
       - name: run cdk deploy
+        working-directory: ./cdk
         env:
           DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
           EMAIL: ${{ secrets.EMAIL }}

@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { RustFunction } from "rust.aws-cdk-lambda";
+import { RustFunction } from "@cdklabs/aws-lambda-rust";
 import * as apigwv2 from "@aws-cdk/aws-apigatewayv2-alpha";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
@@ -11,6 +11,7 @@ import * as sns from "aws-cdk-lib/aws-sns";
 import * as subscriptions from "aws-cdk-lib/aws-sns-subscriptions";
 import { Alarm, Metric, TreatMissingData } from "aws-cdk-lib/aws-cloudwatch";
 import { SnsAction } from "aws-cdk-lib/aws-cloudwatch-actions";
+import { Architecture } from "aws-cdk-lib/aws-lambda";
 
 // Load up info from .env file
 const domainName = getEnv("DOMAIN_NAME");
@@ -22,7 +23,8 @@ export class TrashcalCdkStack extends cdk.Stack {
 
     // Create the rust lambda
     const trashcal = new RustFunction(this, "trashcal-lambda", {
-      directory: "./lambda",
+      entry: "../trashcal-lambda",
+      architecture: Architecture.ARM_64,
       logRetention: logs.RetentionDays.ONE_MONTH,
     });
 
