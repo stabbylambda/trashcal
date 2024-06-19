@@ -26,7 +26,7 @@ jobs:
 
       - name: Build
         working-directory: ./trashcal-lambda
-        run: devenv shell cargo lambda build --arm64
+        run: devenv shell cargo lambda build -- --arm64
 
       - name: Run tests
         working-directory: ./trashcal-lambda
