@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { RustFunction } from "@cdklabs/aws-lambda-rust";
+import { PackageManagerType, RustFunction } from "@cdklabs/aws-lambda-rust";
 import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
@@ -24,6 +24,9 @@ export class TrashcalCdkStack extends cdk.Stack {
     // Create the rust lambda
     const trashcal = new RustFunction(this, "trashcal-lambda", {
       entry: "../trashcal-lambda",
+      bundling: {
+        packageManagerType: PackageManagerType.CARGO_ZIGBUILD,
+      },
       architecture: Architecture.ARM_64,
       logRetention: logs.RetentionDays.ONE_MONTH,
     });
