@@ -1,4 +1,16 @@
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
 .env
+
+# CDK asset staging directory
 
 *.js
 !jest.config.js
@@ -6,7 +18,8 @@
 node_modules
 
 .build/
-
-# CDK asset staging directory
 .cdk.staging
 cdk.out
+
+.env
+target/
