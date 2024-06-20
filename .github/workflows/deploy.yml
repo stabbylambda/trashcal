@@ -1,6 +1,9 @@
 name: Deploy With CDK
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
