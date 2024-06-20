@@ -26,7 +26,7 @@ jobs:
       - name: Use nix-develop shell
         uses: nicknovitski/nix-develop@v1.1.0
         with:
-          arguments: . --impure
+          arguments: . --impure --accept-flake-config
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
