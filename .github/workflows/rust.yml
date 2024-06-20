@@ -2,7 +2,7 @@ name: Rust
 
 on:
   push:
-    branches: 
+    branches:
       - main
   pull_request:
     branches:
@@ -18,18 +18,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
+        uses: DeterminateSystems/nix-installer-action@v12
 
       - name: Setup Magic Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
+        uses: DeterminateSystems/magic-nix-cache-action@v7
 
       - name: Use nix-develop shell
         uses: nicknovitski/nix-develop@v1.1.0
         with:
           arguments: . --impure
-      
+
       - name: Build
         working-directory: ./trashcal-lambda
         run: cargo lambda build --arm64
