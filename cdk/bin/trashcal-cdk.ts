@@ -2,12 +2,11 @@
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
 import { TrashcalCdkStack } from "../lib/trashcal-cdk-stack";
-import { checkInstalledTarget } from "@cdklabs/aws-lambda-rust/lib/util";
+import { spawnSync } from "child_process";
 
-console.log(
-  "Target installed?",
-  checkInstalledTarget("aarch64-unknown-linux-gnu")
-);
+const proc = spawnSync("rustup", ["target", "list", "--installed"]);
+console.log(proc);
+console.log(proc.stdout.toString());
 
 const app = new cdk.App();
 new TrashcalCdkStack(app, "TrashcalCdkStack", {});
