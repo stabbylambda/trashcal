@@ -28,6 +28,9 @@ jobs:
         with:
           arguments: . --impure --accept-flake-config
 
+      - name: Add the arm targets
+        run: rustup target add aarch64-unknown-linux-gnu
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
