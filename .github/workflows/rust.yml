@@ -30,6 +30,9 @@ jobs:
         with:
           arguments: . --impure
 
+      - name: Rust Targets
+        run: rustup target list --installed
+
       - name: Build
         working-directory: ./trashcal-lambda
         run: cargo lambda build --arm64
