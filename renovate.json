@@ -15,6 +15,14 @@
       ],
       "matchCurrentVersion": "!/^0/",
       "automerge": true
+    },
+    {
+      "groupName": "lambda",
+      "groupSlug": "lambda",
+      "matchPackageNames": [
+        "lambda_runtime",
+        "lambda_http"
+      ]
     }
   ]
 }
