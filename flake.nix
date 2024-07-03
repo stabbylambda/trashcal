@@ -32,6 +32,10 @@
               inherit inputs pkgs;
               modules = [
                 {
+                  aws-vault.enable=true;
+                  aws-vault.profile="trashcal";
+                  aws-vault.awscliWrapper.enable=true;
+
                   languages.rust.enable = true;
                   languages.rust.channel = "stable";
                   languages.rust.targets = [

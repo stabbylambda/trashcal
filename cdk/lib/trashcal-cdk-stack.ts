@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 import * as cdk from "aws-cdk-lib";
+import * as iam from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 import { PackageManagerType, RustFunction } from "@cdklabs/aws-lambda-rust";
 import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2";
@@ -9,9 +10,13 @@ import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as sns from "aws-cdk-lib/aws-sns";
 import * as subscriptions from "aws-cdk-lib/aws-sns-subscriptions";
-import { Alarm, Metric, TreatMissingData } from "aws-cdk-lib/aws-cloudwatch";
+import { Alarm, TreatMissingData } from "aws-cdk-lib/aws-cloudwatch";
 import { SnsAction } from "aws-cdk-lib/aws-cloudwatch-actions";
 import { Architecture } from "aws-cdk-lib/aws-lambda";
+import {
+  GithubActionsIdentityProvider,
+  GithubActionsRole,
+} from "aws-cdk-github-oidc";
 
 // Load up info from .env file
 const domainName = getEnv("DOMAIN_NAME");
@@ -20,6 +25,26 @@ const email = getEnv("EMAIL");
 export class TrashcalCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const provider = new GithubActionsIdentityProvider(this, "GithubProvider");
+    const uploadRole = new GithubActionsRole(this, "UploadRole", {
+      provider: provider,
+      owner: "stabbylambda",
+      repo: "trashcal",
+      filter: "ref:refs/heads/main",
+      inlinePolicies: {
+        CdkDeploymentPolicy: new iam.PolicyDocument({
+          assignSids: true,
+          statements: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: ["sts:AssumeRole"],
+              resources: [`arn:aws:iam::${this.account}:role/cdk-*`],
+            }),
+          ],
+        }),
+      },
+    });
 
     // Create the rust lambda
     const trashcal = new RustFunction(this, "trashcal-lambda", {
