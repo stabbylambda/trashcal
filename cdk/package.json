@@ -6,7 +6,7 @@
   },
   "scripts": {
     "cdk": "cdk",
-    "deploy": "cdk deploy && npm run smoke",
+    "deploy": "cdk deploy --all && npm run smoke",
     "smoke": "vitest run smoke.test.ts"
   },
   "devDependencies": {
