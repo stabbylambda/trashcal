@@ -54,6 +54,9 @@ export class TrashcalCdkStack extends cdk.Stack {
       entry: "../trashcal-lambda",
       architecture: Architecture.ARM_64,
       logRetention: logs.RetentionDays.ONE_MONTH,
+      environment: {
+        AWS_LAMBDA_LOG_FORMAT: "json",
+      },
     });
 
     // Create the log group
