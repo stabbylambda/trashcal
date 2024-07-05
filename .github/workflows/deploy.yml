@@ -58,7 +58,7 @@ jobs:
         run: |
           npm install
 
-      - name: run cdk deploy
+      - name: run cdk deploy --all
         working-directory: ./cdk
         env:
           DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
