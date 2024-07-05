@@ -3,7 +3,7 @@ dotenv.config();
 import * as cdk from "aws-cdk-lib";
 import * as iam from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
-import { PackageManagerType, RustFunction } from "@cdklabs/aws-lambda-rust";
+import { RustFunction } from "@cdklabs/aws-lambda-rust";
 import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
@@ -17,13 +17,16 @@ import {
   GithubActionsIdentityProvider,
   GithubActionsRole,
 } from "aws-cdk-github-oidc";
+import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
+import * as cloudfrontOrigins from "aws-cdk-lib/aws-cloudfront-origins";
 
-// Load up info from .env file
-const domainName = getEnv("DOMAIN_NAME");
-const email = getEnv("EMAIL");
-
+export interface TrashcalCdkStackProps extends cdk.StackProps {
+  domainName: string;
+  email: string;
+  cert: acm.Certificate;
+}
 export class TrashcalCdkStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: TrashcalCdkStackProps) {
     super(scope, id, props);
 
     const provider = new GithubActionsIdentityProvider(this, "GithubProvider");
@@ -64,32 +67,30 @@ export class TrashcalCdkStack extends cdk.Stack {
       trashcal
     );
 
-    // set up the https cert and domain
-    const cert = new acm.Certificate(this, "trashcal-cert", {
-      domainName,
-      // I'm using Cloudflare as my DNS provider, so this part requires going into the certificate
-      // manager and creating the CNAME record that AWS wants.
-      validation: acm.CertificateValidation.fromDns(),
-    });
-
-    const domain = new apigwv2.DomainName(this, domainName, {
-      domainName,
-      certificate: cert,
-    });
-
     // create the api gateway endpoint
-    const api = new apigwv2.HttpApi(this, "trashcal-api", {
-      disableExecuteApiEndpoint: true,
-      defaultDomainMapping: {
-        domainName: domain,
-      },
-    });
+    const api = new apigwv2.HttpApi(this, "trashcal-api", {});
 
     // only one route
     api.addRoutes({
       path: "/{id}",
       methods: [apigwv2.HttpMethod.GET],
       integration: trashcalIntegration,
+    });
+
+    new cloudfront.Distribution(this, "cloudfront-api", {
+      domainNames: [props.domainName],
+      defaultBehavior: {
+        origin: new cloudfrontOrigins.HttpOrigin(
+          `${api.apiId}.execute-api.${cdk.Stack.of(this).region}.amazonaws.com`
+        ),
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+
+        originRequestPolicy:
+          cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+      },
+      certificate: props.cert,
     });
 
     const metricNamespace = "trashcal";
@@ -126,15 +127,7 @@ export class TrashcalCdkStack extends cdk.Stack {
     });
 
     const topic = new sns.Topic(this, "trashcal-panics");
-    topic.addSubscription(new subscriptions.EmailSubscription(email));
+    topic.addSubscription(new subscriptions.EmailSubscription(props.email));
     panicAlarm.addAlarmAction(new SnsAction(topic));
   }
-}
-
-function getEnv(name: string): string {
-  if (!process.env[name]) {
-    console.log(`${name} environment variable is not set`);
-  }
-
-  return process.env[name] ?? process.exit(1);
 }
