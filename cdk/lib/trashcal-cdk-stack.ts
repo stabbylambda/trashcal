@@ -77,6 +77,22 @@ export class TrashcalCdkStack extends cdk.Stack {
       integration: trashcalIntegration,
     });
 
+    let cachePolicy = new cloudfront.CachePolicy(
+      this,
+      "trashcal-cache-policy",
+      {
+        minTtl: cdk.Duration.hours(1),
+        maxTtl: cdk.Duration.days(2),
+        defaultTtl: cdk.Duration.days(1),
+        enableAcceptEncodingBrotli: true,
+        enableAcceptEncodingGzip: true,
+        headerBehavior: cloudfront.CacheHeaderBehavior.allowList(
+          // we need to add the Accept header to the cache key because otherwise json and ical collide
+          "Accept"
+        ),
+      }
+    );
+
     new cloudfront.Distribution(this, "cloudfront-api", {
       domainNames: [props.domainName],
       defaultBehavior: {
@@ -88,7 +104,7 @@ export class TrashcalCdkStack extends cdk.Stack {
 
         originRequestPolicy:
           cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
-        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+        cachePolicy: cachePolicy,
       },
       certificate: props.cert,
     });
