@@ -9,7 +9,6 @@ use lambda_http::{Body, Request, RequestExt, Response};
 use lambda_runtime::tracing;
 use lambda_runtime::tracing::{info, instrument};
 
-pub mod diagnostic_wrapper;
 pub mod error;
 pub mod pickup;
 pub mod pickup_calendar;
