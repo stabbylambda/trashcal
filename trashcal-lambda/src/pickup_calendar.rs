@@ -1,6 +1,9 @@
 use crate::error::Error;
 use crate::pickup::nth_text;
 use crate::pickup::{Pickup, PickupType};
+use chrono::{DateTime, Days, NaiveDateTime, NaiveTime, TimeZone, Utc};
+use chrono_tz::Tz;
+use chrono_tz::US::Pacific;
 use icalendar::{Calendar, Component, Event, EventLike};
 use itertools::Itertools;
 use scraper::{Html, Selector};
@@ -45,6 +48,38 @@ impl PickupCalendar {
             address: address.to_string(),
             pickups: dates,
         }
+    }
+
+    pub fn valid_until(&self) -> Option<DateTime<Utc>> {
+        self.pickups.first().and_then(|d| {
+            // expire at 4AM the day after pickup (because 4AM isn't in a daylight savings time fold)
+            let time = NaiveTime::from_hms_opt(4, 0, 0)?;
+            let date_time = d.date.and_time(time);
+            let next_day = date_time.checked_add_days(Days::new(1))?;
+
+            // convert from Pacific to UTC because the HTTP header requires that
+            let local = naive_to_pacific(&next_day)?;
+
+            Some(local.to_utc())
+        })
+    }
+
+    pub fn expires_header(&self) -> String {
+        match self.valid_until() {
+            Some(d) => internet_message_format(&d).to_string(),
+            None => "0".to_string(), // don't cache bad responses
+        }
+    }
+}
+
+fn internet_message_format(d: &DateTime<Utc>) -> String {
+    d.format("%a, %d %b %Y %H:%M:%S %Z").to_string()
+}
+fn naive_to_pacific(naive: &NaiveDateTime) -> Option<DateTime<Tz>> {
+    let local = Pacific.from_local_datetime(naive);
+    match local {
+        chrono::offset::LocalResult::Single(d) => Some(d),
+        _ => None,
     }
 }
 
@@ -98,13 +133,16 @@ impl<'a> TryFrom<(&'a str, &'a Html)> for PickupCalendar {
 
 #[cfg(test)]
 mod test {
-    use chrono::Duration;
-    use chrono::NaiveDate;
-    use chrono::Utc;
+    use core::panic;
+
+    use chrono::{Duration, NaiveDate, TimeZone, Utc};
+    use chrono::{NaiveDateTime, NaiveTime};
+    use chrono_tz::US::Pacific;
 
     use super::Pickup;
     use super::PickupCalendar;
     use crate::pickup::PickupType;
+    use crate::pickup_calendar::{internet_message_format, naive_to_pacific};
 
     fn create_pickup_html(name: &str, date: &str) -> String {
         format!("<div><h3>{name}</h3><p></p><p></p><p>{date}</p></div>")
@@ -196,5 +234,55 @@ mod test {
                 Pickup::new(PickupType::Trash, this_week),
             ]
         );
+    }
+
+    #[test]
+    fn expires_next_day() {
+        let calendar = PickupCalendar {
+            id: "foo".to_string(),
+            address: "bar".to_string(),
+            pickups: vec![
+                Pickup::new(
+                    PickupType::Trash,
+                    chrono::NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+                ),
+                // the calculation should only take the earliest
+                Pickup::new(
+                    PickupType::Trash,
+                    chrono::NaiveDate::from_ymd_opt(2023, 8, 1).unwrap(),
+                ),
+            ],
+        };
+
+        let expected = NaiveDateTime::new(
+            NaiveDate::from_ymd_opt(2023, 1, 2).unwrap(),
+            NaiveTime::from_hms_opt(4, 0, 0).unwrap(),
+        );
+
+        let expected = naive_to_pacific(&expected).unwrap().to_utc();
+        let valid = calendar.valid_until().unwrap();
+
+        assert_eq!(valid, expected);
+    }
+
+    #[test]
+    fn expires_header() {
+        let calendar = PickupCalendar {
+            id: "foo".to_string(),
+            address: "bar".to_string(),
+            pickups: vec![Pickup::new(
+                PickupType::Trash,
+                chrono::NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+            )],
+        };
+
+        let chrono::LocalResult::Single(expected) = Pacific.with_ymd_and_hms(2023, 1, 2, 4, 0, 0)
+        else {
+            panic!()
+        };
+        let expected = expected.to_utc();
+        let expected = internet_message_format(&expected);
+
+        assert_eq!(calendar.expires_header(), expected);
     }
 }

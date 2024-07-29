@@ -32,6 +32,8 @@
               inherit inputs pkgs;
               modules = [
                 {
+                  env.CHRONO_TZ_TIMEZONE_FILTER = "(UTC|US/.*)";
+
                   aws-vault.enable=true;
                   aws-vault.profile="trashcal";
                   aws-vault.awscliWrapper.enable=true;

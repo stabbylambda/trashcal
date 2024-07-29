@@ -1,8 +1,9 @@
 use anyhow::Result;
 use http::{HeaderMap, HeaderValue};
+use pickup_calendar::PickupCalendar;
 
 use crate::trashcal::trashcal;
-use http::header::{CONTENT_DISPOSITION, CONTENT_TYPE};
+use http::header::{CONTENT_DISPOSITION, CONTENT_TYPE, EXPIRES};
 use http::StatusCode;
 use icalendar::Calendar;
 use lambda_http::{Body, Request, RequestExt, Response};
@@ -27,13 +28,16 @@ pub async fn get_trashcal(id: &str, accept: &str) -> Result<Response<Body>> {
         let json = serde_json::to_string_pretty(&calendar)?;
 
         resp.header(CONTENT_TYPE, "application/json")
+            .header(EXPIRES, calendar.expires_header())
             .body(json.into())
     } else {
         info!(message = "Returning calendar as iCal");
+        let expires = calendar.expires_header();
         let calendar = Calendar::try_from(calendar)?;
 
         resp.header(CONTENT_TYPE, "text/calendar;charset=UTF-8")
             .header(CONTENT_DISPOSITION, "attachment; filename=trashcal.ics")
+            .header(EXPIRES, expires)
             .body(calendar.to_string().into())
     };
     Ok(resp?)
