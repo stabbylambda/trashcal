@@ -73,7 +73,7 @@ impl PickupCalendar {
 }
 
 fn internet_message_format(d: &DateTime<Utc>) -> String {
-    d.format("%a, %d %b %Y %H:%M:%S %Z").to_string()
+    d.format("%a, %d %b %Y %H:%M:%S GMT").to_string()
 }
 fn naive_to_pacific(naive: &NaiveDateTime) -> Option<DateTime<Tz>> {
     let local = Pacific.from_local_datetime(naive);

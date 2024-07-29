@@ -1,6 +1,5 @@
 use anyhow::Result;
 use http::{HeaderMap, HeaderValue};
-use pickup_calendar::PickupCalendar;
 
 use crate::trashcal::trashcal;
 use http::header::{CONTENT_DISPOSITION, CONTENT_TYPE, EXPIRES};

@@ -49,6 +49,7 @@
                   languages.javascript.npm.enable = true;
 
                   packages = [
+                    pkgs.aws-vault
                     pkgs.rustup # not actually using rustup, but the cdk builder expects it
                     pkgs.cargo-zigbuild
                     pkgs.cargo-lambda
