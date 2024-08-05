@@ -8,10 +8,7 @@ use icalendar::{Calendar, Component, Event, EventLike};
 use itertools::Itertools;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
-use std::sync::OnceLock;
-
-static ADDRESS_SELECTOR: OnceLock<Selector> = OnceLock::new();
-static SCHEDULE_SELECTOR: OnceLock<Selector> = OnceLock::new();
+use std::sync::LazyLock;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PickupCalendar {
@@ -111,17 +108,17 @@ SD Trash Page: https://getitdone.sandiego.gov/CollectionDetail?id={}",
     }
 }
 
+static ADDRESS_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("p.subheading").unwrap());
+static SCHEDULE_SELECTOR: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("div.schedule div").unwrap());
+
 impl<'a> TryFrom<(&'a str, &'a Html)> for PickupCalendar {
     type Error = Error;
 
     fn try_from((id, document): (&'a str, &'a Html)) -> Result<Self, Self::Error> {
-        let address_selector =
-            ADDRESS_SELECTOR.get_or_init(|| Selector::parse("p.subheading").unwrap());
-        let schedule_selector =
-            SCHEDULE_SELECTOR.get_or_init(|| Selector::parse("div.schedule div").unwrap());
-
-        let address = nth_text(document.root_element(), address_selector, 0)?;
-        let schedule = document.select(schedule_selector);
+        let address = nth_text(document.root_element(), &ADDRESS_SELECTOR, 0)?;
+        let schedule = document.select(&SCHEDULE_SELECTOR);
         let pickups: Result<Vec<Pickup>, Error> = schedule
             .map(Pickup::try_from)
             .filter(Result::is_ok)
