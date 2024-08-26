@@ -11,16 +11,8 @@ pub enum Error {
     HttpError(#[from] reqwest::Error),
     #[error("Parse Error")]
     ParseError,
-}
-
-impl From<chrono::format::ParseError> for Error {
-    fn from(_: chrono::format::ParseError) -> Self {
-        Self::ParseError
-    }
-}
-
-impl From<strum::ParseError> for Error {
-    fn from(_: strum::ParseError) -> Self {
-        Self::ParseError
-    }
+    #[error("Enum Parse Error")]
+    EnumParseError(#[from] strum::ParseError),
+    #[error("DateTime Error")]
+    TimeZoneError(#[from] chrono::format::ParseError),
 }

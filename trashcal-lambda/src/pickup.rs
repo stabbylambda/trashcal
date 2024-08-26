@@ -1,47 +1,26 @@
-use std::{fmt::Display, str::FromStr, sync::LazyLock};
+use std::sync::LazyLock;
 
 use crate::error::Error;
 use chrono::NaiveDate;
 use scraper::{ElementRef, Html, Selector};
 use serde::{Deserialize, Serialize};
+use strum::{Display, EnumString};
 
-#[derive(Debug, Eq, PartialEq, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize, Hash)]
+#[derive(
+    EnumString, Display, Serialize, Deserialize, Debug, Eq, PartialEq, PartialOrd, Ord, Clone, Copy,
+)]
 pub enum PickupType {
     #[serde(rename(serialize = "♻️ Recyclables", deserialize = "♻️ Recyclables"))]
+    #[strum(to_string = "♻️ Recyclables", serialize = "Recyclables")]
     Recyclables,
 
     #[serde(rename(serialize = "🌳 Organics", deserialize = "🌳 Organics"))]
+    #[strum(to_string = "🌳 Organics", serialize = "Organics")]
     Organics,
 
     #[serde(rename(serialize = "🗑️ Trash", deserialize = "🗑️ Trash"))]
+    #[strum(to_string = "🗑️ Trash", serialize = "Trash")]
     Trash,
-}
-
-impl FromStr for PickupType {
-    type Err = Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "Recyclables" => Ok(Self::Recyclables),
-            "Organics" => Ok(Self::Organics),
-            "Trash" => Ok(Self::Trash),
-            _ => Err(Error::ParseError),
-        }
-    }
-}
-
-impl Display for PickupType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                PickupType::Recyclables => "♻️ Recyclables",
-                PickupType::Organics => "🌳 Organics",
-                PickupType::Trash => "🗑️ Trash",
-            }
-        )
-    }
 }
 
 pub(crate) fn nth_text<'a>(
