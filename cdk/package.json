@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "aws-cdk-lib": "2.161.1",
-    "@cdklabs/aws-lambda-rust": "^0.0.4",
+    "@cdklabs/aws-lambda-rust": "^0.0.5",
     "constructs": "^10.3.0",
     "cross-fetch": "^4.0.0",
     "dotenv": "^16.4.1",
