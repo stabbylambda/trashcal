@@ -27,7 +27,7 @@ jobs:
         uses: DeterminateSystems/magic-nix-cache-action@v8
 
       - name: Use nix-develop shell
-        uses: nicknovitski/nix-develop@v1.1.1
+        uses: nicknovitski/nix-develop@v1.2.0
         with:
           arguments: . --impure --accept-flake-config
 
