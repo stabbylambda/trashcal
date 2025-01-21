@@ -24,7 +24,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v15
 
       - name: Setup Magic Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
+        uses: DeterminateSystems/magic-nix-cache-action@v9
 
       - name: Use nix-develop shell
         uses: nicknovitski/nix-develop@v1.2.1
