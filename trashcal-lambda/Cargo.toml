@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0"
+anyhow = "1.0.97"
 chrono = { version = "0.4.40", features = ["serde"] }
-chrono-tz = { version = "0.10.0", features = ["filter-by-regex"] }
+chrono-tz = { version = "0.10.3", features = ["filter-by-regex"] }
 http = "1.1.0"
 icalendar = { version = "0.16.13", features = ["parser", "serde"] }
 itertools = "0.14"
