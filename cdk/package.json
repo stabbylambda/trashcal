@@ -21,7 +21,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.195.0",
+    "aws-cdk-lib": "2.196.0",
     "@cdklabs/aws-lambda-rust": "^0.0.7",
     "constructs": "^10.3.0",
     "cross-fetch": "^4.0.0",
