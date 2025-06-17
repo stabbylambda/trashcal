@@ -13,7 +13,7 @@ pub async fn trashcal(id: &str) -> Result<PickupCalendar> {
     let id = id.replace(".ics", "");
 
     info!("Getting trashcal");
-    let url = format!("https://getitdone.force.com/CollectionDetail?id={id}");
+    let url = format!("https://getitdone.sandiego.gov/CollectionDetail?id={id}");
     let html = reqwest::get(url).await?.text().await?;
 
     // If we got the landing page, don't even try to parse it
