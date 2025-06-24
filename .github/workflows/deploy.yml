@@ -53,15 +53,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: npm install
+      - name: install deps
         working-directory: ./cdk
         run: |
-          npm install
+          pnpm install
 
-      - name: run cdk deploy
+      - name: cdk deploy
         working-directory: ./cdk
         env:
           DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
           EMAIL: ${{ secrets.EMAIL }}
         run: |
-          npm run deploy
+          pnpm run deploy
