@@ -51,7 +51,7 @@ export class TrashcalCdkStack extends cdk.Stack {
 
     // Create the rust lambda
     const trashcal = new RustFunction(this, "trashcal-lambda", {
-      entry: "../trashcal-lambda",
+      entry: "../lambda",
       architecture: Architecture.ARM_64,
       logRetention: logs.RetentionDays.ONE_MONTH,
       environment: {
