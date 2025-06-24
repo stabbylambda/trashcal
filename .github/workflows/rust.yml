@@ -34,9 +34,9 @@ jobs:
         run: rustup target list --installed
 
       - name: Build
-        working-directory: ./trashcal-lambda
+        working-directory: ./lambda
         run: cargo lambda build --arm64
 
       - name: Run tests
-        working-directory: ./trashcal-lambda
+        working-directory: ./lambda
         run: cargo test
