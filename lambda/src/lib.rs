@@ -6,8 +6,9 @@ use http::header::{CONTENT_DISPOSITION, CONTENT_TYPE, EXPIRES};
 use http::StatusCode;
 use icalendar::Calendar;
 use lambda_http::{Body, Request, RequestExt, Response};
-use lambda_runtime::tracing;
-use lambda_runtime::tracing::{info, instrument};
+use lambda_runtime::tracing::info;
+
+use tracing::instrument;
 
 pub mod error;
 pub mod pickup;

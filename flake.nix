@@ -47,9 +47,7 @@
 
                   languages.javascript.enable = true;
                   languages.javascript.package = pkgs.nodejs_22;
-                  languages.javascript.npm.enable = true;
-
-                  devcontainer.enable = true;
+                  languages.javascript.pnpm.enable = true;
 
                   packages = [
                     pkgs.aws-vault

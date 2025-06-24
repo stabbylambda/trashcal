@@ -1,0 +1,16 @@
+{
+  "name": "trashcal",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "deploy": "pnpm --filter trashcal-cdk deploy",
+    "smoke": "pnpm --filter trashcal-cdk smoke"
+  },
+  "keywords": [],
+  "workspaces": [
+    "cdk"
+  ],
+  "author": "",
+  "license": "MIT"
+}

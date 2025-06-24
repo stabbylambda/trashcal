@@ -14,7 +14,7 @@ lambda_http = { version = "0.15", default-features = false, features = [
     "apigw_rest",
     "apigw_http",
 ] }
-lambda_runtime = { version = "0.14", features = ["anyhow", "tracing"] }
+lambda_runtime = { version = "0.14.2", features = ["anyhow", "tracing"] }
 # disabling native openssl in favor of rustls because cross compiling openssl with cargo lambda sucks
 reqwest = { version = "0.12", default-features = false, features = [
     "gzip",
@@ -26,3 +26,4 @@ serde_json = "1.0"
 strum = { version = "0.27", features = ["derive"] }
 tokio = { version = "1", features = ["macros"] }
 thiserror = "2.0"
+tracing = "0.1.41"
