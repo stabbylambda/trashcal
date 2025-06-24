@@ -10,11 +10,11 @@ chrono-tz = { version = "0.10.3", features = ["filter-by-regex"] }
 http = "1.1.0"
 icalendar = { version = "0.16.13", features = ["parser", "serde"] }
 itertools = "0.14"
-lambda_http = { version = "0.14", default-features = false, features = [
+lambda_http = { version = "0.15", default-features = false, features = [
     "apigw_rest",
     "apigw_http",
 ] }
-lambda_runtime = { version = "0.13", features = ["anyhow", "tracing"] }
+lambda_runtime = { version = "0.14", features = ["anyhow", "tracing"] }
 # disabling native openssl in favor of rustls because cross compiling openssl with cargo lambda sucks
 reqwest = { version = "0.12", default-features = false, features = [
     "gzip",
