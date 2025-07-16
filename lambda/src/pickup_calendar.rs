@@ -80,24 +80,22 @@ fn naive_to_pacific(naive: &NaiveDateTime) -> Option<DateTime<Tz>> {
     }
 }
 
-impl TryFrom<PickupCalendar> for Calendar {
-    type Error = Error;
-
-    fn try_from(value: PickupCalendar) -> Result<Self, Self::Error> {
-        let url = format!("https://stabbylambda.com/trashcal/{}", value.id);
+impl PickupCalendar {
+    pub fn to_calendar(&self, whimsy: bool) -> Result<Calendar, Error> {
+        let url = format!("https://stabbylambda.com/trashcal/{}", self.id);
         let description = format!(
             "Trashcal: {url}
 
 SD Trash Page: https://getitdone.sandiego.gov/CollectionDetail?id={}",
-            value.id
+            self.id
         );
 
         // Create new calendar events and add them
-        let events = value.pickups.into_iter().map(|pickup| {
+        let events = self.pickups.iter().map(|pickup| {
             Event::new()
                 .all_day(pickup.date)
                 .url(&url)
-                .summary(&pickup.name.to_string())
+                .summary(&pickup.name.display_string(whimsy))
                 .description(&description)
                 .done()
         });
@@ -105,6 +103,15 @@ SD Trash Page: https://getitdone.sandiego.gov/CollectionDetail?id={}",
         let mut calendar = Calendar::new().name("Trashcal").done();
         calendar.extend(events);
         Ok(calendar)
+    }
+}
+
+impl TryFrom<PickupCalendar> for Calendar {
+    type Error = Error;
+
+    fn try_from(value: PickupCalendar) -> Result<Self, Self::Error> {
+        // Default to whimsy = true for backward compatibility
+        value.to_calendar(true)
     }
 }
 

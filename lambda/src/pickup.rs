@@ -23,6 +23,20 @@ pub enum PickupType {
     Trash,
 }
 
+impl PickupType {
+    pub fn display_string(&self, whimsy: bool) -> String {
+        if whimsy {
+            self.to_string()
+        } else {
+            match self {
+                PickupType::Recyclables => "Recyclables".to_string(),
+                PickupType::Organics => "Organics".to_string(),
+                PickupType::Trash => "Trash".to_string(),
+            }
+        }
+    }
+}
+
 pub(crate) fn nth_text<'a>(
     x: ElementRef<'a>,
     selector: &'a Selector,
@@ -103,5 +117,19 @@ mod tests {
         let result = Pickup::try_from(html.as_str());
 
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn display_string_with_whimsy() {
+        assert_eq!(PickupType::Trash.display_string(true), "🗑️ Trash");
+        assert_eq!(PickupType::Recyclables.display_string(true), "♻️ Recyclables");
+        assert_eq!(PickupType::Organics.display_string(true), "🌳 Organics");
+    }
+
+    #[test]
+    fn display_string_without_whimsy() {
+        assert_eq!(PickupType::Trash.display_string(false), "Trash");
+        assert_eq!(PickupType::Recyclables.display_string(false), "Recyclables");
+        assert_eq!(PickupType::Organics.display_string(false), "Organics");
     }
 }

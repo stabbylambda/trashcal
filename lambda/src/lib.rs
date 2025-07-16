@@ -4,7 +4,6 @@ use http::{HeaderMap, HeaderValue};
 use crate::trashcal::trashcal;
 use http::header::{CONTENT_DISPOSITION, CONTENT_TYPE, EXPIRES};
 use http::StatusCode;
-use icalendar::Calendar;
 use lambda_http::{Body, Request, RequestExt, Response};
 use lambda_runtime::tracing::info;
 
@@ -16,7 +15,7 @@ pub mod pickup_calendar;
 pub mod trashcal;
 
 #[instrument]
-pub async fn get_trashcal(id: &str, accept: &str) -> Result<Response<Body>> {
+pub async fn get_trashcal(id: &str, accept: &str, whimsy: bool) -> Result<Response<Body>> {
     let is_ics_request = id.contains(".ics");
 
     let calendar = trashcal(id).await?;
@@ -33,7 +32,7 @@ pub async fn get_trashcal(id: &str, accept: &str) -> Result<Response<Body>> {
     } else {
         info!(message = "Returning calendar as iCal");
         let expires = calendar.expires_header();
-        let calendar = Calendar::try_from(calendar)?;
+        let calendar = calendar.to_calendar(whimsy)?;
 
         resp.header(CONTENT_TYPE, "text/calendar;charset=UTF-8")
             .header(CONTENT_DISPOSITION, "attachment; filename=trashcal.ics")
@@ -52,8 +51,14 @@ pub async fn trashcal_handler(event: Request) -> Result<Response<Body>> {
         .or_else(|| query.first("id"))
         .unwrap_or("null");
     let accept = get_mime_type(event.headers());
+    
+    // get the whimsy parameter, defaults to true
+    let whimsy = query
+        .first("whimsy")
+        .map(|v| v != "false")
+        .unwrap_or(true);
 
-    get_trashcal(id, accept).await
+    get_trashcal(id, accept, whimsy).await
 }
 
 /// Safely get the accept header. Fastmail apparently doesn't send an accept header at all (!)
