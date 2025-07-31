@@ -15,7 +15,7 @@
     "aws-cdk": "2.1023.0",
     "aws-cdk-github-oidc": "^2.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "~5.8.0",
+    "typescript": "~5.9.0",
     "vitest": "^3.0.0",
     "@vitest/ui": "^3.0.0"
   },
