@@ -1,8 +1,25 @@
 use http::header::CONTENT_TYPE;
+use std::sync::Once;
 use trashcal::trashcal_handler;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+static INIT: Once = Once::new();
+
+fn init_tracing() {
+    INIT.call_once(|| {
+        tracing_subscriber::registry()
+            .with(
+                tracing_subscriber::EnvFilter::try_from_default_env()
+                    .unwrap_or_else(|_| "trashcal=debug,tower_http=debug".into()),
+            )
+            .with(tracing_subscriber::fmt::layer())
+            .init();
+    });
+}
 
 #[tokio::test]
 async fn path_based() {
+    init_tracing();
     let input = include_str!("./data/path_based.json");
     let request = lambda_http::request::from_str(input).expect("failed to create request");
     let response = trashcal_handler(request).await.expect("Failed to execute");
@@ -16,6 +33,7 @@ async fn path_based() {
 
 #[tokio::test]
 async fn path_based_with_extension() {
+    init_tracing();
     let input = include_str!("./data/path_based_with_extension.json");
     let request = lambda_http::request::from_str(input).expect("failed to create request");
     let response = trashcal_handler(request).await.expect("Failed to execute");
@@ -29,6 +47,7 @@ async fn path_based_with_extension() {
 
 #[tokio::test]
 async fn query_based() {
+    init_tracing();
     let input = include_str!("./data/query_based.json");
     let request = lambda_http::request::from_str(input).expect("failed to create request");
     let response = trashcal_handler(request).await.expect("Failed to execute");
@@ -42,6 +61,7 @@ async fn query_based() {
 
 #[tokio::test]
 async fn path_based_with_json() {
+    init_tracing();
     let input = include_str!("./data/path_based_with_json.json");
     let request = lambda_http::request::from_str(input).expect("failed to create request");
     let response = trashcal_handler(request).await.expect("Failed to execute");
@@ -52,6 +72,7 @@ async fn path_based_with_json() {
 
 #[tokio::test]
 async fn fails_with_no_id() {
+    init_tracing();
     let input = include_str!("./data/no_id.json");
     let request = lambda_http::request::from_str(input).expect("failed to create request");
     let response = trashcal_handler(request).await;
@@ -60,6 +81,7 @@ async fn fails_with_no_id() {
 
 #[tokio::test]
 async fn fails_with_bad_id() {
+    init_tracing();
     let input = include_str!("./data/bad_id.json");
     let request = lambda_http::request::from_str(input).expect("failed to create request");
     let response = trashcal_handler(request).await;

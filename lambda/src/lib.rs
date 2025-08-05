@@ -23,14 +23,22 @@ pub async fn get_trashcal(id: &str, accept: &str, whimsy: bool) -> Result<Respon
     // build the response as either json or calendar
     let resp = Response::builder().status(StatusCode::OK);
     let resp = if accept.starts_with("application/json") && !is_ics_request {
-        info!(message = "Returning calendar as JSON");
+        info!(
+            message = "Returning calendar as JSON", 
+            address = %calendar.address,
+            pickup_dates = ?calendar.pickups.iter().map(|p| p.date).collect::<Vec<_>>()
+        );
         let json = serde_json::to_string_pretty(&calendar)?;
 
         resp.header(CONTENT_TYPE, "application/json")
             .header(EXPIRES, calendar.expires_header())
             .body(json.into())
     } else {
-        info!(message = "Returning calendar as iCal");
+        info!(
+            message = "Returning calendar as iCal",
+            address = %calendar.address,
+            pickup_dates = ?calendar.pickups.iter().map(|p| p.date).collect::<Vec<_>>()
+        );
         let expires = calendar.expires_header();
         let calendar = calendar.to_calendar(whimsy)?;
 
@@ -72,11 +80,28 @@ pub fn get_mime_type(headers: &HeaderMap<HeaderValue>) -> &str {
 #[cfg(test)]
 mod test {
     use http::HeaderMap;
+    use std::sync::Once;
+    use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
     use crate::get_mime_type;
 
+    static INIT: Once = Once::new();
+
+    fn init_tracing() {
+        INIT.call_once(|| {
+            tracing_subscriber::registry()
+                .with(
+                    tracing_subscriber::EnvFilter::try_from_default_env()
+                        .unwrap_or_else(|_| "trashcal=debug,tower_http=debug".into()),
+                )
+                .with(tracing_subscriber::fmt::layer())
+                .init();
+        });
+    }
+
     #[test]
     fn test_missing_accept_header() {
+        init_tracing();
         let headers = HeaderMap::new();
         let result = get_mime_type(&headers);
         assert_eq!(result, "text/calendar");
@@ -84,6 +109,7 @@ mod test {
 
     #[test]
     fn test_json() {
+        init_tracing();
         let mut headers = HeaderMap::new();
         headers.insert(http::header::ACCEPT, "application/json".parse().unwrap());
         let result = get_mime_type(&headers);
@@ -92,6 +118,7 @@ mod test {
 
     #[test]
     fn test_calendar() {
+        init_tracing();
         let mut headers = HeaderMap::new();
         headers.insert(http::header::ACCEPT, "text/calendar".parse().unwrap());
         let result = get_mime_type(&headers);
@@ -100,6 +127,7 @@ mod test {
 
     #[test]
     fn test_weird_header_value() {
+        init_tracing();
         let mut headers = HeaderMap::new();
         headers.insert(http::header::ACCEPT, "💩".parse().unwrap());
         let result = get_mime_type(&headers);
