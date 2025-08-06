@@ -20,7 +20,7 @@
     "@vitest/ui": "^3.0.0"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.209.0",
+    "aws-cdk-lib": "2.209.1",
     "@cdklabs/aws-lambda-rust": "^0.0.7",
     "constructs": "^10.3.0",
     "cross-fetch": "^4.0.0",
