@@ -11,7 +11,7 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@types/node": "^22.13.13",
+    "@types/node": "^24.0.0",
     "aws-cdk": "2.1033.0",
     "aws-cdk-github-oidc": "^2.4.1",
     "ts-node": "^10.9.2",
