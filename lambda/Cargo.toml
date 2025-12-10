@@ -10,7 +10,7 @@ chrono-tz = { version = "0.10.3", features = ["filter-by-regex"] }
 http = "1.1.0"
 icalendar = { version = "0.16.13", features = ["parser", "serde"] }
 itertools = "0.14"
-lambda_http = { version = "0.15", default-features = false, features = [
+lambda_http = { version = "0.17", default-features = false, features = [
     "apigw_rest",
     "apigw_http",
 ] }
