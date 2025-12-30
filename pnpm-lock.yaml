@@ -11,8 +11,8 @@ importers:
   cdk:
     dependencies:
       '@cdklabs/aws-lambda-rust':
-        specifier: ^0.0.8
-        version: 0.0.8(aws-cdk-lib@2.232.1(constructs@10.4.4))(constructs@10.4.4)
+        specifier: ^0.0.10
+        version: 0.0.10(aws-cdk-lib@2.232.1(constructs@10.4.4))(constructs@10.4.4)
       aws-cdk-lib:
         specifier: 2.232.1
         version: 2.232.1(constructs@10.4.4)
@@ -66,10 +66,10 @@ packages:
       - jsonschema
       - semver
 
-  '@cdklabs/aws-lambda-rust@0.0.8':
-    resolution: {integrity: sha512-2NhQUC+pJSb/q4R/Fj6nC3GHZHj4+XRYfPinTxI5p8nSf7o/41tGLK4YWeyjzaP+I8iLmwqrU+yJxszcp1HmAQ==}
+  '@cdklabs/aws-lambda-rust@0.0.10':
+    resolution: {integrity: sha512-RLsNgCBe4l2PIxkDEoGuOElW/hSB7G2xNe91lvFIptjRmzcJXokM5+P/gHDJRp4G2Lm34ocg+JiO5DzSH5evKw==}
     peerDependencies:
-      aws-cdk-lib: ^2.121.0
+      aws-cdk-lib: ^2.233.0
       constructs: ^10.0.5
     bundledDependencies:
       - toml
@@ -742,7 +742,7 @@ snapshots:
 
   '@aws-cdk/cloud-assembly-schema@48.20.0': {}
 
-  '@cdklabs/aws-lambda-rust@0.0.8(aws-cdk-lib@2.232.1(constructs@10.4.4))(constructs@10.4.4)':
+  '@cdklabs/aws-lambda-rust@0.0.10(aws-cdk-lib@2.232.1(constructs@10.4.4))(constructs@10.4.4)':
     dependencies:
       aws-cdk-lib: 2.232.1(constructs@10.4.4)
       constructs: 10.4.4
