@@ -16,7 +16,7 @@ lambda_http = { version = "0.15", default-features = false, features = [
 ] }
 lambda_runtime = { version = "0.14.2", features = ["anyhow", "tracing"] }
 # disabling native openssl in favor of rustls because cross compiling openssl with cargo lambda sucks
-reqwest = { version = "0.12", default-features = false, features = [
+reqwest = { version = "0.13", default-features = false, features = [
     "gzip",
     "rustls-tls",
 ] }
