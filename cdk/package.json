@@ -11,20 +11,20 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@types/node": "^22.13.13",
-    "aws-cdk": "2.1034.0",
+    "@types/node": "^22.15.21",
+    "@vitest/ui": "^4.0.18",
+    "aws-cdk": "2.1104.0",
     "aws-cdk-github-oidc": "^2.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "~5.9.0",
-    "vitest": "^4.0.0",
-    "@vitest/ui": "^4.0.0"
+    "typescript": "~5.9.3",
+    "vitest": "^4.0.18"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.232.1",
-    "@cdklabs/aws-lambda-rust": "^0.0.8",
-    "constructs": "^10.3.0",
-    "cross-fetch": "^4.0.0",
-    "dotenv": "^16.4.1",
+    "@cdklabs/aws-lambda-rust": "^0.0.10",
+    "aws-cdk-lib": "2.236.0",
+    "constructs": "^10.4.5",
+    "cross-fetch": "^4.1.0",
+    "dotenv": "^17.2.3",
     "source-map-support": "^0.5.21"
   }
 }
