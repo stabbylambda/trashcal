@@ -35,7 +35,7 @@ jobs:
         run: rustup target add aarch64-unknown-linux-gnu
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.ASSUME_ROLE }}
           aws-region: us-west-2
