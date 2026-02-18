@@ -13,7 +13,7 @@
   "devDependencies": {
     "@types/node": "^22.15.21",
     "@vitest/ui": "^4.0.18",
-    "aws-cdk": "2.1106.0",
+    "aws-cdk": "2.1106.1",
     "aws-cdk-github-oidc": "^2.4.1",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.3",
