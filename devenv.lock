@@ -3,11 +3,11 @@
     "aws-op": {
       "flake": false,
       "locked": {
-        "lastModified": 1773262002,
-        "narHash": "sha256-Y76odoIzCI7Ki6ze7pwZ3HEEyBsx0w9d+1e3Hu2ukS4=",
+        "lastModified": 1773263157,
+        "narHash": "sha256-XtnsKePbR8V0aQ9rCS9U1y6Arvi6qEQg7zW5YRYa1TA=",
         "owner": "stabbylambda",
         "repo": "devenv-aws-op",
-        "rev": "ed81ebdccee02557f09db905a94b91c3ef55d4f9",
+        "rev": "770c5a638226168b1db9b30e8b4ead8b120d0402",
         "type": "github"
       },
       "original": {
