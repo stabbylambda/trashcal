@@ -49,20 +49,19 @@ export class TrashcalCdkStack extends cdk.Stack {
       },
     });
 
+    // Create the log group
+    const logGroup = new logs.LogGroup(this, "trashcal-logs", {
+      retention: logs.RetentionDays.ONE_MONTH,
+    });
+
     // Create the rust lambda
     const trashcal = new RustFunction(this, "trashcal-lambda", {
       entry: "../lambda",
       architecture: Architecture.ARM_64,
-      logRetention: logs.RetentionDays.ONE_MONTH,
+      logGroup,
       environment: {
         AWS_LAMBDA_LOG_FORMAT: "json",
       },
-    });
-
-    // Create the log group
-    const logGroup = new logs.LogGroup(this, "trashcal-logs", {
-      logGroupName: `/aws/lambda/${trashcal.functionName}`,
-      retention: logs.RetentionDays.ONE_MONTH,
     });
 
     const trashcalIntegration = new HttpLambdaIntegration(
