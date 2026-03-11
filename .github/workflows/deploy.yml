@@ -16,6 +16,11 @@ concurrency:
 jobs:
   run-cdk-deploy:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: devenv shell bash -- -e {0}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -40,14 +45,10 @@ jobs:
           role-duration-seconds: 900
 
       - name: Install deps
-        shell: devenv shell bash -- -e {0}
-        working-directory: ./cdk
-        run: pnpm install
+        run: cd cdk && pnpm install
 
       - name: CDK deploy
-        shell: devenv shell bash -- -e {0}
-        working-directory: ./cdk
         env:
           DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
           EMAIL: ${{ secrets.EMAIL }}
-        run: pnpm run deploy
+        run: cd cdk && pnpm run deploy
