@@ -6,3 +6,8 @@ inputs:
     inputs:
       nixpkgs:
         follows: nixpkgs
+  aws-op:
+    url: github:stabbylambda/devenv-aws-op
+    flake: false
+imports:
+  - aws-op

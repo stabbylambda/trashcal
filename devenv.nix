@@ -3,10 +3,6 @@
 {
   dotenv.disableHint = true;
 
-  env.AWS_PROFILE = "trashcal";
-  env.AWS_REGION = "us-west-2";
-  env.AWS_CONFIG_FILE="${config.devenv.root}/.aws/config";
-
   env.CHRONO_TZ_TIMEZONE_FILTER = "(UTC|US/.*)";
 
   languages.rust.enable = true;
@@ -21,7 +17,6 @@
   languages.javascript.pnpm.enable = true;
 
   packages = [
-    pkgs.awscli2
     pkgs.rustup # not actually using rustup, but the cdk builder expects it
     pkgs.cargo-zigbuild
     pkgs.cargo-lambda

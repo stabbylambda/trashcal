@@ -1,13 +1,29 @@
 {
   "nodes": {
+    "aws-op": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1773262002,
+        "narHash": "sha256-Y76odoIzCI7Ki6ze7pwZ3HEEyBsx0w9d+1e3Hu2ukS4=",
+        "owner": "stabbylambda",
+        "repo": "devenv-aws-op",
+        "rev": "ed81ebdccee02557f09db905a94b91c3ef55d4f9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stabbylambda",
+        "repo": "devenv-aws-op",
+        "type": "github"
+      }
+    },
     "devenv": {
       "locked": {
         "dir": "src/modules",
-        "lastModified": 1773233176,
-        "narHash": "sha256-QlRYNImV/lxdiWFIwT/44ZmplQ8/EqJSRKRKNu3mmGE=",
+        "lastModified": 1773258458,
+        "narHash": "sha256-dA0iMwHI+rH0yqWiK9MWDetWm/d4lR2du0My+gRr9Ow=",
         "owner": "cachix",
         "repo": "devenv",
-        "rev": "95883c250f6443c1810d09b696dcbac60f716b14",
+        "rev": "724263b1d5571c4f97996af5ee3e36812380dbf6",
         "type": "github"
       },
       "original": {
@@ -55,6 +71,7 @@
     },
     "root": {
       "inputs": {
+        "aws-op": "aws-op",
         "devenv": "devenv",
         "nixpkgs": "nixpkgs",
         "rust-overlay": "rust-overlay"
