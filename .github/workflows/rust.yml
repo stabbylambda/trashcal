@@ -36,7 +36,7 @@ jobs:
         run: nix profile add nixpkgs#devenv
 
       - name: Build
-        run: cd trashcal-lambda && cargo lambda build --arm64
+        run: cd lambda && cargo lambda build --arm64
 
       - name: Run tests
-        run: cd trashcal-lambda && cargo test
+        run: cd lambda && cargo test
