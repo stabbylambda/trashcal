@@ -44,6 +44,9 @@ jobs:
           aws-region: us-west-2
           role-duration-seconds: 900
 
+      - name: Add arm target
+        run: rustup target add aarch64-unknown-linux-gnu
+
       - name: Install deps
         run: cd cdk && pnpm install
 
