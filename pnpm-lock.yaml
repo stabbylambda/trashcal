@@ -12,10 +12,10 @@ importers:
     dependencies:
       '@cdklabs/aws-lambda-rust':
         specifier: ^0.0.10
-        version: 0.0.10(aws-cdk-lib@2.245.0(constructs@10.6.0))(constructs@10.6.0)
+        version: 0.0.10(aws-cdk-lib@2.246.0(constructs@10.6.0))(constructs@10.6.0)
       aws-cdk-lib:
-        specifier: 2.245.0
-        version: 2.245.0(constructs@10.6.0)
+        specifier: 2.246.0
+        version: 2.246.0(constructs@10.6.0)
       constructs:
         specifier: ^10.4.5
         version: 10.6.0
@@ -40,7 +40,7 @@ importers:
         version: 2.1115.1
       aws-cdk-github-oidc:
         specifier: ^2.4.1
-        version: 2.4.1(aws-cdk-lib@2.245.0(constructs@10.6.0))(constructs@10.6.0)
+        version: 2.4.1(aws-cdk-lib@2.246.0(constructs@10.6.0))(constructs@10.6.0)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@24.12.0)(typescript@5.9.3)
@@ -294,8 +294,8 @@ packages:
       aws-cdk-lib: ^2.89.0
       constructs: ^10.0.0
 
-  aws-cdk-lib@2.245.0:
-    resolution: {integrity: sha512-Yfeb+wKC6s+Ttm/N93C6vY6ksyCh68WaG/j3N6dalJWTW/V4o6hUolHm+v2c2IofJEUS45c5AF/EEj24e9hfMA==}
+  aws-cdk-lib@2.246.0:
+    resolution: {integrity: sha512-7OtF95mss9dWohopCNQKAlNFrMJwgOIvNTNgoOWWcKhULBf6UxKCaf6ATlnuysIWRGf2DHgcval/4+yySOKRBw==}
     engines: {node: '>= 20.0.0'}
     peerDependencies:
       constructs: ^10.5.0
@@ -674,9 +674,9 @@ snapshots:
 
   '@aws-cdk/cloud-assembly-schema@53.9.0': {}
 
-  '@cdklabs/aws-lambda-rust@0.0.10(aws-cdk-lib@2.245.0(constructs@10.6.0))(constructs@10.6.0)':
+  '@cdklabs/aws-lambda-rust@0.0.10(aws-cdk-lib@2.246.0(constructs@10.6.0))(constructs@10.6.0)':
     dependencies:
-      aws-cdk-lib: 2.245.0(constructs@10.6.0)
+      aws-cdk-lib: 2.246.0(constructs@10.6.0)
       constructs: 10.6.0
 
   '@cspotcode/source-map-support@0.8.1':
@@ -861,12 +861,12 @@ snapshots:
 
   assertion-error@2.0.1: {}
 
-  aws-cdk-github-oidc@2.4.1(aws-cdk-lib@2.245.0(constructs@10.6.0))(constructs@10.6.0):
+  aws-cdk-github-oidc@2.4.1(aws-cdk-lib@2.246.0(constructs@10.6.0))(constructs@10.6.0):
     dependencies:
-      aws-cdk-lib: 2.245.0(constructs@10.6.0)
+      aws-cdk-lib: 2.246.0(constructs@10.6.0)
       constructs: 10.6.0
 
-  aws-cdk-lib@2.245.0(constructs@10.6.0):
+  aws-cdk-lib@2.246.0(constructs@10.6.0):
     dependencies:
       '@aws-cdk/asset-awscli-v1': 2.2.263
       '@aws-cdk/asset-node-proxy-agent-v6': 2.1.1
