@@ -14,7 +14,7 @@
     "@types/node": "^24.0.0",
     "@vitest/ui": "^4.0.18",
     "aws-cdk": "2.1121.0",
-    "aws-cdk-github-oidc": "^2.4.1",
+    "aws-cdk-github-oidc": "^4.0.0",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.3",
     "vitest": "^4.0.18"
