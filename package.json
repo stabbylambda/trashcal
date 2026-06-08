@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "",
+  "packageManager": "pnpm@11.5.2",
   "scripts": {
     "deploy": "pnpm --filter trashcal-cdk run deploy",
     "smoke": "pnpm --filter trashcal-cdk run smoke"
