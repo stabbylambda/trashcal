@@ -14,7 +14,7 @@
 
   languages.javascript.enable = true;
   languages.javascript.package = pkgs.nodejs_24;
-  languages.javascript.pnpm.enable = true;
+  languages.javascript.corepack.enable = true;
 
   packages = [
     pkgs.rustup # not actually using rustup, but the cdk builder expects it
