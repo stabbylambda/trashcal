@@ -19,6 +19,7 @@ import {
 } from "aws-cdk-github-oidc";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as cloudfrontOrigins from "aws-cdk-lib/aws-cloudfront-origins";
+import * as s3 from "aws-cdk-lib/aws-s3";
 
 export interface TrashcalCdkStackProps extends cdk.StackProps {
   domainName: string;
@@ -100,8 +101,30 @@ export class TrashcalCdkStack extends cdk.Stack {
       }
     );
 
+    // CloudFront access logs bucket. Standard (legacy) CloudFront logging
+    // delivers log files using bucket ACLs, so ACLs must stay enabled
+    // (BUCKET_OWNER_PREFERRED) and the bucket can't use SSE-KMS — hence
+    // SSE-S3. The 90-day lifecycle rule caps growth. This replaces the old
+    // out-of-band `trashcal-access-logs` bucket, which can be decommissioned
+    // once this distribution is delivering logs here.
+    const accessLogsBucket = new s3.Bucket(this, "trashcal-access-logs", {
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      enforceSSL: true,
+      lifecycleRules: [
+        {
+          id: "expire-access-logs",
+          expiration: cdk.Duration.days(90),
+        },
+      ],
+    });
+
     new cloudfront.Distribution(this, "cloudfront-api", {
       domainNames: [props.domainName],
+      enableLogging: true,
+      logBucket: accessLogsBucket,
+      logFilePrefix: "cloudfront/",
       defaultBehavior: {
         origin: new cloudfrontOrigins.HttpOrigin(
           `${api.apiId}.execute-api.${cdk.Stack.of(this).region}.amazonaws.com`
