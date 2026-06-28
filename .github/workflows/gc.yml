@@ -1,0 +1,73 @@
+name: CDK Garbage Collect
+on:
+  # First of each month at 07:00 UTC. Also runnable on demand.
+  schedule:
+    - cron: "0 7 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+# Share the deploy concurrency group so gc never runs while a deploy is in
+# flight -- AWS warns against garbage collecting during an active deployment.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  run-cdk-gc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        shell: devenv shell bash -- -e {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31.10.6
+
+      - name: Set up devenv cache
+        uses: cachix/cachix-action@3ba601ff5bbb07c7220846facfa2cd81eeee15a1 # v16
+        with:
+          name: devenv
+
+      - name: Install devenv
+        shell: bash
+        run: nix profile add nixpkgs#devenv
+
+      - name: Configure AWS Credentials
+        id: creds
+        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # v6.2.0
+        with:
+          role-to-assume: ${{ secrets.ASSUME_ROLE }}
+          aws-region: us-west-2
+          role-duration-seconds: 900
+
+      - name: Install deps
+        run: cd cdk && pnpm install
+
+      # Garbage collect unused S3 assets in both bootstrapped environments:
+      # us-west-2 hosts the Lambda, us-east-1 hosts the CloudFront cert and the
+      # cross-region-reference custom resources. Explicit environments mean gc
+      # works off deployed CloudFormation templates without synthesizing the
+      # app (no Rust build needed). Assets are tagged when first found isolated
+      # and only deleted after sitting unused for the rollback buffer, so a
+      # recent deploy can still roll back.
+      - name: CDK garbage collect
+        env:
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+          EMAIL: ${{ secrets.EMAIL }}
+        run: >
+          cd cdk && pnpm exec cdk gc
+          "aws://${{ steps.creds.outputs.aws-account-id }}/us-west-2"
+          "aws://${{ steps.creds.outputs.aws-account-id }}/us-east-1"
+          --unstable=gc
+          --type=s3
+          --rollback-buffer-days=30
+          --created-buffer-days=1
+          --confirm=false
