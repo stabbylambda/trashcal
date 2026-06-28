@@ -36,7 +36,7 @@ export class TrashcalCdkStack extends cdk.Stack {
       this,
       "GithubProvider",
     );
-    const uploadRole = new GithubActionsRole(this, "UploadRole", {
+    new GithubActionsRole(this, "UploadRole", {
       provider: provider,
       owner: "stabbylambda",
       repo: "trashcal",
