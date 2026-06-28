@@ -20,11 +20,7 @@ describe("post deploy", () => {
   });
 
   it("works with a json calendar", async () => {
-    let response = await fetch(`${baseUrl}/${id}`, {
-      headers: {
-        accept: "application/json",
-      },
-    });
+    let response = await fetch(`${baseUrl}/${id}.json`);
     let body = await response.json();
     console.log(body);
 

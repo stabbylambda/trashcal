@@ -1,11 +1,11 @@
 {
   "version": "2.0",
   "routeKey": "$default",
-  "rawPath": "/a4Ot0000001E8i4EAC",
+  "rawPath": "/a4Ot0000001E8i4EAC.json",
   "rawQueryString": "",
   "cookies": [],
   "headers": {
-    "accept": "application/json"
+    "accept": "text/calendar"
   },
   "queryStringParameters": {},
   "requestContext": {
@@ -28,7 +28,7 @@
     "timeEpoch": 1583348638390
   },
   "body": "",
-  "pathParameters": { "id": "a4Ot0000001E8i4EAC" },
+  "pathParameters": { "id": "a4Ot0000001E8i4EAC.json" },
   "isBase64Encoded": false,
   "stageVariables": {}
 }
