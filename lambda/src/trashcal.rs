@@ -9,8 +9,9 @@ pub async fn trashcal(id: &str) -> Result<PickupCalendar> {
     // as far as I can tell, all IDs start with a4O
     ensure!(id.starts_with("a4O"), Error::IdError(id.to_string()));
 
-    // rip out .ics for Paul
-    let id = id.replace(".ics", "");
+    // rip out the format suffix (.ics for Paul, .json for the website) before
+    // building the upstream URL
+    let id = id.replace(".ics", "").replace(".json", "");
 
     info!("Getting trashcal");
     let url = format!("https://getitdone.sandiego.gov/CollectionDetail?id={id}");

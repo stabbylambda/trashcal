@@ -19,7 +19,6 @@ import {
 } from "aws-cdk-github-oidc";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as cloudfrontOrigins from "aws-cdk-lib/aws-cloudfront-origins";
-import * as s3 from "aws-cdk-lib/aws-s3";
 
 export interface TrashcalCdkStackProps extends cdk.StackProps {
   domainName: string;
@@ -85,46 +84,8 @@ export class TrashcalCdkStack extends cdk.Stack {
       integration: trashcalIntegration,
     });
 
-    let cachePolicy = new cloudfront.CachePolicy(
-      this,
-      "trashcal-cache-policy",
-      {
-        minTtl: cdk.Duration.hours(1),
-        maxTtl: cdk.Duration.days(2),
-        defaultTtl: cdk.Duration.days(1),
-        enableAcceptEncodingBrotli: true,
-        enableAcceptEncodingGzip: true,
-        headerBehavior: cloudfront.CacheHeaderBehavior.allowList(
-          // we need to add the Accept header to the cache key because otherwise json and ical collide
-          "Accept"
-        ),
-      }
-    );
-
-    // CloudFront access logs bucket. Standard (legacy) CloudFront logging
-    // delivers log files using bucket ACLs, so ACLs must stay enabled
-    // (BUCKET_OWNER_PREFERRED) and the bucket can't use SSE-KMS — hence
-    // SSE-S3. The 90-day lifecycle rule caps growth. This replaces the old
-    // out-of-band `trashcal-access-logs` bucket, which can be decommissioned
-    // once this distribution is delivering logs here.
-    const accessLogsBucket = new s3.Bucket(this, "trashcal-access-logs", {
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
-      encryption: s3.BucketEncryption.S3_MANAGED,
-      enforceSSL: true,
-      lifecycleRules: [
-        {
-          id: "expire-access-logs",
-          expiration: cdk.Duration.days(90),
-        },
-      ],
-    });
-
     new cloudfront.Distribution(this, "cloudfront-api", {
       domainNames: [props.domainName],
-      enableLogging: true,
-      logBucket: accessLogsBucket,
-      logFilePrefix: "cloudfront/",
       defaultBehavior: {
         origin: new cloudfrontOrigins.HttpOrigin(
           `${api.apiId}.execute-api.${cdk.Stack.of(this).region}.amazonaws.com`
@@ -134,7 +95,17 @@ export class TrashcalCdkStack extends cdk.Stack {
 
         originRequestPolicy:
           cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
-        cachePolicy: cachePolicy,
+        // Managed policy (no custom cache policy / no access logging) keeps us on
+        // CloudFront's free plan. CACHING_OPTIMIZED is the one that works here: it
+        // keeps NO request headers in the cache key. That matters because the API
+        // Gateway origin routes by Host and has no custom domain, so the viewer Host
+        // must not be forwarded (hence ALL_VIEWER_EXCEPT_HOST_HEADER above). The
+        // UseOriginCacheControlHeaders / Amplify policies all force Host into the
+        // cache key, which makes CloudFront forward the viewer Host and API Gateway
+        // answer 403 Forbidden. Format is selected by URL suffix, so the path —
+        // always in the cache key — keeps JSON and iCal separate. TTL follows the
+        // Expires header the Lambda emits.
+        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
       },
       certificate: props.cert,
     });
