@@ -29,7 +29,12 @@ export class TrashcalCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: TrashcalCdkStackProps) {
     super(scope, id, props);
 
-    const provider = new GithubActionsIdentityProvider(this, "GithubProvider");
+    // The GitHub OIDC provider is an account-level singleton, created in a
+    // prior deploy. Reference the existing one rather than managing it here.
+    const provider = GithubActionsIdentityProvider.fromAccount(
+      this,
+      "GithubProvider",
+    );
     const uploadRole = new GithubActionsRole(this, "UploadRole", {
       provider: provider,
       owner: "stabbylambda",
