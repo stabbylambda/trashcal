@@ -6,10 +6,10 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.97"
 chrono = { version = "0.4.40", features = ["serde"] }
-chrono-tz = { version = "0.10.3", features = ["filter-by-regex"] }
+chrono-tz = { version = "0.10.4", features = ["filter-by-regex"] }
 http = "1.1.0"
 icalendar = { version = "0.17", features = ["parser", "serde"] }
-itertools = "0.14"
+itertools = "0.15"
 lambda_http = { version = "1.0", default-features = false, features = [
     "apigw_rest",
     "apigw_http",
@@ -20,10 +20,10 @@ reqwest = { version = "0.13", default-features = false, features = [
     "gzip",
     "rustls",
 ] }
-scraper = "0.25"
+scraper = "0.27"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-strum = { version = "0.27", features = ["derive"] }
+strum = { version = "0.28", features = ["derive"] }
 tokio = { version = "1", features = ["macros"] }
 thiserror = "2.0"
 tracing = "0.1.41"

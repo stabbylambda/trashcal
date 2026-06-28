@@ -12,16 +12,16 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
-    "@vitest/ui": "^4.0.18",
-    "aws-cdk": "2.1121.0",
-    "aws-cdk-github-oidc": "^2.4.1",
+    "@vitest/ui": "^4.1.9",
+    "aws-cdk": "2.1128.1",
+    "aws-cdk-github-oidc": "^4.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "~5.9.3",
-    "vitest": "^4.0.18"
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.9"
   },
   "dependencies": {
     "@cdklabs/aws-lambda-rust": "^0.0.10",
-    "aws-cdk-lib": "2.253.1",
+    "aws-cdk-lib": "2.260.0",
     "constructs": "^10.4.5",
     "cross-fetch": "^4.1.0",
     "dotenv": "^17.2.3",
