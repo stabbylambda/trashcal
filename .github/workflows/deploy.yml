@@ -38,6 +38,18 @@ jobs:
         shell: bash
         run: nix profile add nixpkgs#devenv
 
+      # The Rust toolchain comes from the Nix rust-overlay, so cargo/rustc are
+      # only on PATH inside `devenv shell`. Expose their bin dir to subsequent
+      # action steps so rust-cache can probe the toolchain for its cache key.
+      - name: Expose Rust toolchain to GitHub PATH
+        run: dirname "$(command -v cargo)" >> "$GITHUB_PATH"
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae # v2.9.1
+        with:
+          workspaces: lambda
+          cache-on-failure: true
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # v6.2.0
         with:
